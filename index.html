@@ -269,6 +269,9 @@ ol.steps li::before{
 .stars.used{color:#f5c518}
 .pick-minus{flex:none;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--card-2);color:var(--text);font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center}
 .pick-minus:active{border-color:var(--accent);color:var(--accent)}
+.pick-info{flex:none;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--card-2);color:var(--muted);font-family:Georgia,'Times New Roman',serif;font-style:italic;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center}
+.pick-info:active{border-color:var(--accent);color:var(--accent)}
+.sheet.above{z-index:60}
 
 /* ---------- confirm modal ---------- */
 .modal-bg{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.62);display:none;align-items:center;justify-content:center;padding:24px}
@@ -548,6 +551,7 @@ nav.tabs button.on{color:var(--accent)}
     <div class="badges" id="dBadges"></div>
     <div class="sec"><h3 class="anton">Muscles</h3><div class="muscle-tags" id="dMuscles"></div></div>
     <div class="sec" id="dStepsSec"><h3 class="anton">How to</h3><ol class="steps" id="dSteps"></ol></div>
+    <button class="btn" id="dAddBtn" hidden style="width:100%;margin-bottom:10px">Add to workout</button>
     <button class="danger" id="dDelete" hidden>Delete custom exercise</button>
   </div>
 </div>
@@ -1000,9 +1004,11 @@ new IntersectionObserver(entries=>{
 }, {rootMargin:'600px'}).observe($('sentinel'));
 
 /* ---------- detail sheet ---------- */
-function openDetail(ex){
+function openDetail(ex, fromPicker){
   detailEx = ex; imgIdx = 0;
   $('dName').textContent = ex.name;
+  $('detailSheet').classList.toggle('above', !!fromPicker);
+  $('dAddBtn').hidden = !fromPicker;
 
   const badges = [];
   if(ex.level) badges.push(`<span class="badge lvlb"><i class="dot ${esc(ex.level)}"></i>${esc(ex.level)}</span>`);
@@ -1043,8 +1049,18 @@ $('detailImgWrap').addEventListener('click', ()=>{
 });
 function closeDetail(){
   $('detailSheet').classList.remove('open');
-  document.body.style.overflow = '';
+  $('detailSheet').classList.remove('above');
+  if(!$('pickSheet').classList.contains('open')) document.body.style.overflow = '';
 }
+$('dAddBtn').addEventListener('click', ()=>{
+  if(!detailEx || !editing) return;
+  const w = editing.workouts.find(x=> x.id === pickTarget); if(!w) return;
+  w.exercises.push({exId: detailEx.id, name: detailEx.name, sets: 3, reps: 12, kg: '', rest: 90});
+  renderWorkouts();
+  renderPick();
+  toast(`${detailEx.name} added`);
+  closeDetail();
+});
 $('detailBack').addEventListener('click', closeDetail);
 $('dDelete').addEventListener('click', ()=>{
   if(!detailEx) return;
@@ -1326,6 +1342,7 @@ function renderPick(){
       <span class="nm">${esc(x.name)}<br><span class="mu">${esc((x.primaryMuscles||[]).join(', '))}</span></span>
       ${stars}
       ${n > 0 ? `<span class="pick-minus" data-minus="${esc(x.id)}" role="button" aria-label="Remove one">−</span>` : ''}
+      <span class="pick-info" data-info="${esc(x.id)}" role="button" aria-label="View exercise">i</span>
       <span class="lvl ${esc(x.level||'')}"></span>
     </button>`;
   }).join('') || '<div class="empty">No matches — try another search.</div>';
@@ -1333,6 +1350,14 @@ function renderPick(){
 $('pickList').addEventListener('click', e=>{
   if(!editing) return;
   const w = editing.workouts.find(x=> x.id === pickTarget); if(!w) return;
+
+  /* info: preview the exercise before choosing */
+  const info = e.target.closest('.pick-info');
+  if(info){
+    const ex = custom.concat(db).find(x=> String(x.id) === info.dataset.info);
+    if(ex) openDetail(ex, true);
+    return;
+  }
 
   /* minus: remove the most recently added instance of this exercise */
   const minus = e.target.closest('.pick-minus');
@@ -2090,10 +2115,26 @@ $('progressWrap').addEventListener('click', e=>{
 });
 
 /* ---------- rest timer ---------- */
-let restEndT = 0, restIv = null;
+let restEndT = 0, restIv = null, restLastSec = null, audioCtx = null;
+
+function beep(freq, dur, vol){
+  try{
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = 'sine'; o.frequency.value = freq;
+    o.connect(g); g.connect(audioCtx.destination);
+    const t = audioCtx.currentTime;
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    o.start(t); o.stop(t + dur);
+  }catch(e){}
+}
+
 function startRest(sec){
   sec = Math.max(5, +sec || 90);
   restEndT = Date.now() + sec * 1000;
+  restLastSec = null;
   $('restBar').hidden = false;
   $('restBar').classList.remove('go');
   $('restLbl').textContent = 'REST';
@@ -2108,9 +2149,18 @@ function tickRest(){
     $('restTime').textContent = 'GO!';
     $('restLbl').textContent = 'NEXT SET';
     $('restBar').classList.add('go');
+    beep(880, .18, .22);
+    setTimeout(()=> beep(1245, .35, .22), 180);
     if(navigator.vibrate) navigator.vibrate([300,120,300]);
     setTimeout(()=>{ if(!restIv) $('restBar').hidden = true; }, 2500);
     return;
+  }
+  if(r !== restLastSec){
+    restLastSec = r;
+    if(r <= 3){                 /* 3-2-1 warning ticks */
+      beep(660, .09, .16);
+      if(navigator.vibrate) navigator.vibrate(60);
+    }
   }
   $('restTime').textContent = Math.floor(r/60) + ':' + String(r%60).padStart(2,'0');
 }
