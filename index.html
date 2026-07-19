@@ -1055,7 +1055,7 @@ function closeDetail(){
 $('dAddBtn').addEventListener('click', ()=>{
   if(!detailEx || !editing) return;
   const w = editing.workouts.find(x=> x.id === pickTarget); if(!w) return;
-  w.exercises.push({exId: detailEx.id, name: detailEx.name, sets: 3, reps: 12, kg: '', rest: 90});
+  w.exercises.push({exId: detailEx.id, name: detailEx.name, sets: 3, reps: 12, kg: '', rest: 45});
   renderWorkouts();
   renderPick();
   toast(`${detailEx.name} added`);
@@ -1377,7 +1377,7 @@ $('pickList').addEventListener('click', e=>{
 
   const r = e.target.closest('.pick-row'); if(!r) return;
   const ex = custom.concat(db).find(x=> String(x.id) === r.dataset.id); if(!ex) return;
-  w.exercises.push({exId: ex.id, name: ex.name, sets: 3, reps: 12, kg: '', rest: 90});
+  w.exercises.push({exId: ex.id, name: ex.name, sets: 3, reps: 12, kg: '', rest: 45});
   renderWorkouts();
   renderPick();
   toast(`${ex.name} added`);
@@ -2115,7 +2115,7 @@ $('progressWrap').addEventListener('click', e=>{
 });
 
 /* ---------- rest timer ---------- */
-let restEndT = 0, restIv = null, restLastSec = null, audioCtx = null;
+let restEndT = 0, restIv = null, restLastSec = null, restHalf = 0, audioCtx = null;
 
 function beep(freq, dur, vol){
   try{
@@ -2130,11 +2130,21 @@ function beep(freq, dur, vol){
     o.start(t); o.stop(t + dur);
   }catch(e){}
 }
+function speak(txt){
+  try{
+    if(!('speechSynthesis' in window)){ beep(770, .12, .18); return; }
+    const u = new SpeechSynthesisUtterance(txt);
+    u.lang = 'en-US';
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  }catch(e){ beep(770, .12, .18); }
+}
 
 function startRest(sec){
-  sec = Math.max(5, +sec || 90);
+  sec = Math.max(5, +sec || 45);
   restEndT = Date.now() + sec * 1000;
   restLastSec = null;
+  restHalf = sec >= 20 ? Math.ceil(sec / 2) : 0;   /* halfway cue only on longer rests */
   $('restBar').hidden = false;
   $('restBar').classList.remove('go');
   $('restLbl').textContent = 'REST';
@@ -2157,7 +2167,10 @@ function tickRest(){
   }
   if(r !== restLastSec){
     restLastSec = r;
-    if(r <= 3){                 /* 3-2-1 warning ticks */
+    if(restHalf && r === restHalf){          /* halfway: voice + vibration */
+      speak('Halfway there');
+      if(navigator.vibrate) navigator.vibrate([80,60,80]);
+    } else if(r <= 5){                       /* 5-4-3-2-1 warning ticks */
       beep(660, .09, .16);
       if(navigator.vibrate) navigator.vibrate(60);
     }
