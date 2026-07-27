@@ -372,6 +372,10 @@ ol.steps li::before{
 .home{position:relative;overflow:hidden}
 .home-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.3;z-index:0;pointer-events:none}
 .home > *:not(.home-video){position:relative;z-index:1}
+.prof-top{position:relative;padding-top:8px;margin:0 -16px;padding-left:16px;padding-right:16px;overflow:hidden;border-radius:0 0 18px 18px}
+.prof-hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 15%;z-index:0}
+.prof-top::after{content:'';position:absolute;inset:0;z-index:0;background:linear-gradient(180deg, rgba(16,17,20,.35) 0%, rgba(16,17,20,.75) 60%, var(--bg) 100%)}
+.prof-top > *{position:relative;z-index:1}
 
 /* ---------- coming soon ---------- */
 .soon{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
@@ -440,7 +444,7 @@ nav.tabs button.on{color:var(--accent)}
     <div class="home">
       <video class="home-video" id="bgLoop" autoplay muted loop playsinline hidden></video>
       <img class="hero-img" src="hero.png" alt="Lambell — flexing figure logo">
-      <h2 class="anton">Log it.<br>Lift more.</h2>
+      <h2 class="anton" id="homeGreeting">Log it.<br>Lift more.</h2>
       <p class="intro">Lambell keeps your program and your numbers in one place — so next session you always know exactly what you lifted last time.</p>
       <div class="home-steps">
         <div class="hs"><b>01</b><span>Browse the exercise library — 870+ exercises with photos and instructions.</span></div>
@@ -451,6 +455,7 @@ nav.tabs button.on{color:var(--accent)}
         <button class="btn ghost" id="homeLib">Browse exercises</button>
         <button class="btn" id="homePg">Build a program</button>
       </div>
+      <button class="btn ghost" id="homeProfileCta" style="width:auto;padding:9px 18px;margin-top:10px" hidden>👤 Create your profile</button>
       <div class="home-stats" id="homeStats"></div>
     </div>
   </section>
@@ -711,25 +716,32 @@ nav.tabs button.on{color:var(--accent)}
 <!-- PROFILE -->
 <div class="sheet" id="profSheet" role="dialog" aria-modal="true">
   <div class="form-sheet">
-    <div class="sheet-top">
-      <button class="icon-btn" id="profBack" aria-label="Back">←</button>
-      <div class="spacer"></div>
-    </div>
-    <div class="detail-body" style="padding-top:0;padding-bottom:0;text-align:center">
-      <h2 class="anton">Profile</h2>
-      <div class="prof-avatar">
-        <img id="profAvatarImg" alt="" hidden>
-        <svg id="profAvatarFb" width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>
+    <div class="prof-top">
+      <img id="profHero" class="prof-hero-bg" alt="" hidden>
+      <div class="sheet-top">
+        <button class="icon-btn" id="profBack" aria-label="Back">←</button>
+        <div class="spacer"></div>
       </div>
-      <button class="btn ghost" id="avatarChange" style="width:auto;padding:9px 18px;margin-bottom:10px">Change photo</button>
-      <input type="file" id="avatarFile" accept="image/*" hidden>
-    </div>
-    <div class="sec-label" style="margin-top:4px">Finish-screen high-five</div>
-    <div class="hint" style="margin-top:-4px">Who high-fives you when you finish a workout?</div>
-    <div class="gender-seg" id="genderSeg">
-      <button data-g="m">Man</button>
-      <button data-g="f">Woman</button>
-      <button data-g="">Doesn't matter!</button>
+      <div class="detail-body" style="padding-top:0;padding-bottom:0;text-align:center">
+        <h2 class="anton">Profile</h2>
+        <div class="prof-avatar">
+          <img id="profAvatarImg" alt="" hidden>
+          <svg id="profAvatarFb" width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>
+        </div>
+        <button class="btn ghost" id="avatarChange" style="width:auto;padding:9px 18px;margin-bottom:10px">Change photo</button>
+        <input type="file" id="avatarFile" accept="image/*" hidden>
+        <div class="field" style="margin:0 0 4px;text-align:left">
+          <label for="profName">Name</label>
+          <input id="profName" type="text" placeholder="Your name" maxlength="30">
+        </div>
+      </div>
+      <div class="sec-label" style="margin-top:4px">Finish-screen high-five</div>
+      <div class="hint" style="margin-top:-4px">Who high-fives you when you finish a workout?</div>
+      <div class="gender-seg" id="genderSeg">
+        <button data-g="m">Man</button>
+        <button data-g="f">Woman</button>
+        <button data-g="">Doesn't matter!</button>
+      </div>
     </div>
     <div class="sec-label">Body log</div>
     <div class="hint">Log whenever you like — same day overwrites, so you can correct typos.</div>
@@ -791,7 +803,7 @@ nav.tabs button.on{color:var(--accent)}
     <div id="finStreak" class="fin-streak"></div>
     <div id="finMile"></div>
     <div class="fin-line" id="finLifetime" style="color:var(--muted);font-size:12.5px"></div>
-    <button class="btn" id="finClose" style="width:100%;margin-top:10px">Nice \ud83d\udcaa</button>
+    <button class="btn" id="finClose" style="width:100%;margin-top:10px">Nice 💪</button>
   </div>
 </div>
 
@@ -872,6 +884,7 @@ let retrain = false;    // allow logging a second session same day
 let trainWorkoutId = null;
 let profile = {entries: []};  // body measurements over time
 let pvId = null;              // progress photo currently in the viewer
+let hasAvatar = false;
 
 /* ---------- helpers ---------- */
 const $ = id => document.getElementById(id);
@@ -1932,6 +1945,8 @@ function showFinish(d){
     if(list.length) v.src = list[(Math.random() * list.length) | 0];
   });
 
+  $('finClose').textContent = profile.name ? `Nice ${profile.name} 💪` : 'Nice 💪';
+
   $('finishBg').classList.add('open');
   if(!matchMedia('(prefers-reduced-motion: reduce)').matches) confettiBurst();
   if(navigator.vibrate) navigator.vibrate(d.prs.length ? [120,80,120,80,240] : [120,80,120]);
@@ -2132,6 +2147,21 @@ function openProfile(){
 function closeProfile(){ $('profSheet').classList.remove('open'); document.body.style.overflow = ''; }
 $('avatarBtn').addEventListener('click', openProfile);
 $('profBack').addEventListener('click', closeProfile);
+$('profName').addEventListener('input', e=>{
+  profile.name = e.target.value.trim();
+  save(LS_PROFILE, profile);
+  renderHomeStats();
+});
+function updateProfHero(){
+  const img = $('profHero');
+  const base = profile.gender === 'm' ? 'profile-hero-m'
+             : profile.gender === 'f' ? 'profile-hero-f'
+             : 'profile-hero-animal';
+  img.hidden = true;
+  img.onerror = ()=>{ img.hidden = true; };
+  img.onload  = ()=>{ img.hidden = false; };
+  img.src = base + '.jpg';
+}
 $('genderSeg').addEventListener('click', e=>{
   const b = e.target.closest('button[data-g]'); if(!b) return;
   profile.gender = b.dataset.g;
@@ -2139,14 +2169,17 @@ $('genderSeg').addEventListener('click', e=>{
   $('genderSeg').querySelectorAll('button').forEach(x=> x.classList.toggle('on', x === b));
   hiveList = null; hiveCat = null;
   discoverHive();
+  updateProfHero();
 });
 
 function latestVal(key){ for(let i = profile.entries.length-1; i >= 0; i--){ const v = profile.entries[i][key]; if(v !== '' && v != null) return v; } return ''; }
 function firstVal(key){ for(const e of profile.entries){ const v = e[key]; if(v !== '' && v != null) return v; } return ''; }
 
 function renderProfile(){
+  $('profName').value = profile.name || '';
   MEAS.forEach(([k])=>{ $('m_'+k).value = latestVal(k); });
   $('genderSeg').querySelectorAll('button').forEach(b=> b.classList.toggle('on', b.dataset.g === (profile.gender || '')));
+  updateProfHero();
   const rows = MEAS.map(([k, label, unit])=>{
     const a = firstVal(k), b = latestVal(k);
     if(a === '' || b === '' || +a === +b) return '';
@@ -2184,6 +2217,8 @@ function applyAvatar(data){
     $(i).src = data; $(i).hidden = false; $(f).hidden = true;
   });
   $('avatarBtn').classList.add('has');
+  hasAvatar = true;
+  if(currentTab === 'home') renderHomeStats();
 }
 async function loadAvatar(){
   try{ const a = await idbGet('avatar'); if(a) applyAvatar(a.data); }catch(e){}
@@ -2496,7 +2531,12 @@ function renderHomeStats(){
   const st = calcStreak();
   $('homeStats').innerHTML = `<b>${ex}</b> exercises · <b>${programs.length}</b> program${programs.length===1?'':'s'}`
     + (st >= 2 ? ` · 🔥 <b>${st}</b>-wk streak` : '');
+  $('homeGreeting').innerHTML = profile.name
+    ? `Hey ${esc(profile.name)}.<br>Let's lift.`
+    : `Log it.<br>Lift more.`;
+  $('homeProfileCta').hidden = !!(profile.name || profile.gender || hasAvatar);
 }
+$('homeProfileCta').addEventListener('click', openProfile);
 $('homeLib').addEventListener('click', ()=> gotoTab('library'));
 $('homePg') .addEventListener('click', ()=> gotoTab('programs'));
 
