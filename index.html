@@ -366,7 +366,7 @@ ol.steps li::before{
 .fin-pr .pct{color:var(--accent)}
 .fin-mile{background:var(--card-2);border:1px solid var(--line);border-radius:12px;padding:10px;margin:8px 0;font-size:14px;color:#d6d4cc}
 .fin-streak{font-weight:700;color:var(--accent);margin:8px 0}
-.gender-seg{display:flex;gap:8px;justify-content:center;margin:2px 0 4px}
+.gender-seg{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:2px 0 4px}
 .gender-seg button{padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-weight:600;font-size:13.5px;color:var(--muted)}
 .gender-seg button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .home{position:relative;overflow:hidden}
@@ -723,12 +723,13 @@ nav.tabs button.on{color:var(--accent)}
       </div>
       <button class="btn ghost" id="avatarChange" style="width:auto;padding:9px 18px;margin-bottom:10px">Change photo</button>
       <input type="file" id="avatarFile" accept="image/*" hidden>
-      <div class="gender-seg" id="genderSeg">
-        <button data-g="m">Man</button>
-        <button data-g="f">Woman</button>
-        <button data-g="">Skip</button>
-      </div>
-      <div class="hint" style="margin:0 0 4px">Used for the finish-screen high-five 😄</div>
+    </div>
+    <div class="sec-label" style="margin-top:4px">Finish-screen high-five</div>
+    <div class="hint" style="margin-top:-4px">Who high-fives you when you finish a workout?</div>
+    <div class="gender-seg" id="genderSeg">
+      <button data-g="m">Man</button>
+      <button data-g="f">Woman</button>
+      <button data-g="">Doesn't matter!</button>
     </div>
     <div class="sec-label">Body log</div>
     <div class="hint">Log whenever you like — same day overwrites, so you can correct typos.</div>
