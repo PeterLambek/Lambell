@@ -353,6 +353,26 @@ ol.steps li::before{
 .pr-stat .v{font-family:'Anton',Impact,sans-serif;font-size:20px;color:var(--accent);letter-spacing:.02em}
 .pr-stat .l{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:3px}
 
+/* ---------- finish celebration ---------- */
+.finish-bg{position:fixed;inset:0;z-index:75;background:rgba(6,7,9,.88);display:none;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.finish-bg.open{display:flex}
+#confettiCv{position:fixed;inset:0;pointer-events:none;z-index:76}
+.finish-card{position:relative;z-index:77;background:var(--card);border:1px solid var(--accent);border-radius:18px;padding:20px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.finish-card video{width:100%;border-radius:12px;margin-bottom:12px;background:#000}
+.fin-title{font-size:30px;color:var(--accent);margin-bottom:4px}
+.fin-sub{color:var(--muted);font-size:14px;margin-bottom:12px}
+.fin-line{margin:8px 0;font-size:14.5px;color:#d6d4cc}
+.fin-pr{background:var(--card-2);border:1px solid var(--accent);border-radius:12px;padding:10px;margin:8px 0;font-weight:700}
+.fin-pr .pct{color:var(--accent)}
+.fin-mile{background:var(--card-2);border:1px solid var(--line);border-radius:12px;padding:10px;margin:8px 0;font-size:14px;color:#d6d4cc}
+.fin-streak{font-weight:700;color:var(--accent);margin:8px 0}
+.gender-seg{display:flex;gap:8px;justify-content:center;margin:2px 0 4px}
+.gender-seg button{padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-weight:600;font-size:13.5px;color:var(--muted)}
+.gender-seg button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.home{position:relative;overflow:hidden}
+.home-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.3;z-index:0;pointer-events:none}
+.home > *:not(.home-video){position:relative;z-index:1}
+
 /* ---------- coming soon ---------- */
 .soon{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
 .soon .plates{display:flex;align-items:center;gap:6px;margin-bottom:18px}
@@ -418,6 +438,7 @@ nav.tabs button.on{color:var(--accent)}
   <!-- HOME -->
   <section class="view active" id="view-home">
     <div class="home">
+      <video class="home-video" id="bgLoop" autoplay muted loop playsinline hidden></video>
       <img class="hero-img" src="hero.png" alt="Lambell — flexing figure logo">
       <h2 class="anton">Log it.<br>Lift more.</h2>
       <p class="intro">Lambell keeps your program and your numbers in one place — so next session you always know exactly what you lifted last time.</p>
@@ -700,8 +721,14 @@ nav.tabs button.on{color:var(--accent)}
         <img id="profAvatarImg" alt="" hidden>
         <svg id="profAvatarFb" width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>
       </div>
-      <button class="btn ghost" id="avatarChange" style="width:auto;padding:9px 18px;margin-bottom:6px">Change photo</button>
+      <button class="btn ghost" id="avatarChange" style="width:auto;padding:9px 18px;margin-bottom:10px">Change photo</button>
       <input type="file" id="avatarFile" accept="image/*" hidden>
+      <div class="gender-seg" id="genderSeg">
+        <button data-g="m">Man</button>
+        <button data-g="f">Woman</button>
+        <button data-g="">Skip</button>
+      </div>
+      <div class="hint" style="margin:0 0 4px">Used for the finish-screen high-five 😄</div>
     </div>
     <div class="sec-label">Body log</div>
     <div class="hint">Log whenever you like — same day overwrites, so you can correct typos.</div>
@@ -716,6 +743,13 @@ nav.tabs button.on{color:var(--accent)}
     <div class="addline"><button class="btn" id="measSave" style="width:100%">Log today's numbers</button></div>
     <div id="measDeltas"></div>
     <div id="measHist" style="margin-top:8px"></div>
+    <div class="sec-label">Backup</div>
+    <div class="hint">Your data lives only on this phone. Export a backup file now and then — it includes programs, training log, body log and photos.</div>
+    <div class="addline" style="display:flex;gap:8px">
+      <button class="btn ghost" id="expBtn" style="flex:1">Export data</button>
+      <button class="btn ghost" id="impDataBtn" style="flex:1">Import backup</button>
+    </div>
+    <input type="file" id="impDataFile" accept="application/json,.json" hidden>
     <div class="sec-label">Progress photos</div>
     <div class="hint">Photos are compressed and stored only on this phone.</div>
     <div class="photo-grid" id="photoGrid"></div>
@@ -742,6 +776,22 @@ nav.tabs button.on{color:var(--accent)}
   <span class="sp"></span>
   <button id="restPlus">+15s</button>
   <button id="restSkip">Skip</button>
+</div>
+
+<!-- FINISH CELEBRATION -->
+<canvas id="confettiCv" hidden></canvas>
+<div class="finish-bg" id="finishBg">
+  <div class="finish-card">
+    <video id="hiveVideo" playsinline autoplay hidden></video>
+    <div class="anton fin-title">Workout done!</div>
+    <div class="fin-sub" id="finSub"></div>
+    <div id="finPRs"></div>
+    <div id="finGains" class="fin-line"></div>
+    <div id="finStreak" class="fin-streak"></div>
+    <div id="finMile"></div>
+    <div class="fin-line" id="finLifetime" style="color:var(--muted);font-size:12.5px"></div>
+    <button class="btn" id="finClose" style="width:100%;margin-top:10px">Nice \ud83d\udcaa</button>
+  </div>
 </div>
 
 <!-- CONFIRM MODAL -->
@@ -838,6 +888,10 @@ function imgUrl(path, baseIdx=0){ return IMG_BASES[baseIdx] + path; }
   drafts = load(LS_DRAFT) || {};
   profile = load(LS_PROFILE) || {entries: []};
   loadAvatar();
+  const bgv = $('bgLoop');
+  bgv.onerror = ()=>{ bgv.hidden = true; };
+  bgv.oncanplay = ()=>{ bgv.hidden = false; bgv.play().catch(()=>{}); };
+  bgv.src = 'bg-loop.mp4';   /* optional — shown only if the file exists */
   const cached = load(LS_DB);
   if (cached && Array.isArray(cached) && cached.length > 50){
     db = cached; fullLoaded = true;
@@ -1450,7 +1504,31 @@ const TEMPLATES = [
   { n:'Upper / Lower', weeks:8, sched:[0,1,-1,0,1,-1,-1],
     workouts:[
       {n:'Upper', ex:[['Barbell Bench Press',4,12,120],['Bent Over Barbell Row',4,12,90],['Overhead Press',3,12,90],['Dumbbell Bicep Curl',3,12,60]]},
-      {n:'Lower', ex:[['Barbell Squat',4,12,120],['Deadlift',2,8,180],['Dumbbell Lunge',3,12,90],['Standing Calf Raise',3,15,60]]}]}
+      {n:'Lower', ex:[['Barbell Squat',4,12,120],['Deadlift',2,8,180],['Dumbbell Lunge',3,12,90],['Standing Calf Raise',3,15,60]]}]},
+  { n:'Fat Burn — Machines', weeks:8, sched:[0,-1,0,-1,0,-1,-1],
+    workouts:[{n:'Machine Circuit', ex:[
+      ['Leg Press',3,15,45],['Machine Bench Press',3,15,45],['Wide-Grip Lat Pulldown',3,15,45],
+      ['Seated Cable Rows',3,12,45],['Leg Extensions',2,15,45],['Seated Leg Curl',2,15,45],
+      ['Stationary Bike — steady (min)',1,15,0]]}]},
+  { n:'Fat Burn — Bodyweight', weeks:8, sched:[0,-1,0,-1,0,-1,-1],
+    workouts:[{n:'Bodyweight Burner', ex:[
+      ['Bodyweight Squat',3,20,30],['Push-Up',3,12,45],['Bodyweight Walking Lunge',3,20,45],
+      ['Mountain Climbers',3,30,30],['Glute Bridge',3,15,30],['Plank — hold (sec)',3,40,45]]}]},
+  { n:'Couch to 5K', weeks:8, sched:[0,-1,0,-1,-1,0,-1],
+    workouts:[{n:'Run Day (reps = minutes)', ex:[
+      ['Warm-up walk (min)',1,5,0],['Run/walk intervals (min)',1,20,0],['Cool-down walk (min)',1,5,0]]}]},
+  { n:'10K Builder', weeks:8, sched:[-1,0,-1,1,-1,-1,2],
+    workouts:[
+      {n:'Easy Run (min)', ex:[['Run — easy pace (min)',1,30,0]]},
+      {n:'Tempo Run (min)', ex:[['Warm-up jog (min)',1,10,0],['Tempo run (min)',1,20,0],['Cool-down jog (min)',1,10,0]]},
+      {n:'Long Run (min)', ex:[['Run — long slow (min)',1,50,0]]}]},
+  { n:'Half Ironman 70.3 — Base Week', weeks:16, sched:[0,1,2,0,-1,3,4],
+    workouts:[
+      {n:'Swim (min)', ex:[['Swim — drills & technique (min)',1,45,0]]},
+      {n:'Run (min)', ex:[['Run — easy pace (min)',1,45,0]]},
+      {n:'Bike (min)', ex:[['Bike — steady effort (min)',1,60,0]]},
+      {n:'Long Ride + Brick (min)', ex:[['Bike — long ride (min)',1,150,0],['Brick run off the bike (min)',1,20,0]]},
+      {n:'Long Run (min)', ex:[['Run — long slow (min)',1,75,0]]}]}
 ];
 
 /* find a library exercise by id, exact name, or fuzzy name match */
@@ -1718,7 +1796,7 @@ $('trainWrap').addEventListener('click', e=>{
     const s = en.sets[+chk.dataset.s];
     s.done = !s.done;
     saveDrafts();
-    if(s.done) startRest(en.rest);
+    if(s.done && String(en.rest) !== '0') startRest(en.rest);
     renderTrain();
     return;
   }
@@ -1736,10 +1814,59 @@ $('trainWrap').addEventListener('click', e=>{
   }
 });
 
+const MILES = [
+  {v:1000,    t:'a small car \ud83d\ude97'},
+  {v:5000,    t:'an African elephant \ud83d\udc18'},
+  {v:10000,   t:'a city bus \ud83d\ude8c'},
+  {v:25000,   t:'a loaded semi truck \ud83d\ude9a'},
+  {v:50000,   t:'a Boeing 737 \u2708\ufe0f'},
+  {v:100000,  t:'a blue whale \ud83d\udc0b'},
+  {v:250000,  t:'the Statue of Liberty \ud83d\uddfd'},
+  {v:500000,  t:'an Airbus A380 \ud83d\udeec'},
+  {v:1000000, t:'a full freight train \ud83d\ude82'}
+];
+function sessVol(s){
+  return s.entries.reduce((v, e)=> v + e.sets.filter(x=> x.done).reduce((a, x)=> a + ((+x.kg||0)*(+x.reps||0)), 0), 0);
+}
+function calcStreak(){
+  const mondays = new Set();
+  const monKey = dkey=>{
+    const dt = new Date(dkey + 'T12:00:00');
+    dt.setDate(dt.getDate() - ((dt.getDay()+6)%7));
+    return dt.toISOString().slice(0,10);
+  };
+  log.forEach(s=> mondays.add(monKey(s.dkey)));
+  let cur = new Date(monKey(todayKey()) + 'T12:00:00'), n = 0;
+  while(mondays.has(cur.toISOString().slice(0,10))){
+    n++;
+    cur.setDate(cur.getDate() - 7);
+  }
+  return n;
+}
+
 function finishWorkout(){
   const done = draft.entries.reduce((n,en)=> n + en.sets.filter(s=>s.done).length, 0);
   if(!done){ toast('Mark at least one set with \u2713 first'); return; }
   const vol = draft.entries.reduce((v,en)=> v + en.sets.filter(s=>s.done).reduce((a,s)=> a + ((+s.kg||0)*(+s.reps||0)), 0), 0);
+
+  /* PR detection: new best that beats old best by \u22652.5% AND \u22651 kg */
+  const prs = [], gains = [];
+  draft.entries.forEach(en=>{
+    const ds = en.sets.filter(s=> s.done && (+s.kg||0) > 0);
+    if(!ds.length) return;
+    const top = Math.max(...ds.map(s=> +s.kg));
+    let best = 0;
+    log.forEach(sess=> sess.entries.forEach(e2=>{
+      if(e2.exId === en.exId) e2.sets.forEach(s=>{ if(s.done && +s.kg > best) best = +s.kg; });
+    }));
+    if(best > 0 && top > best){
+      const diff = top - best, pct = diff / best * 100;
+      if(diff >= 1 && pct >= 2.5) prs.push({name: en.name, top, pct});
+      else gains.push({name: en.name, diff});
+    }
+  });
+
+  const volBefore = log.reduce((a, s)=> a + sessVol(s), 0);
   log.push({
     id:'s_'+Date.now(), date: new Date().toISOString(), dkey: todayKey(),
     programId: draft.programId, workoutId: draft.workoutId, workoutName: draft.workoutName,
@@ -1748,10 +1875,102 @@ function finishWorkout(){
   });
   save(LS_LOG, log);
   delete drafts[draft.workoutId]; save(LS_DRAFT, drafts);
+  const wname = draft.workoutName;
   draft = null; retrain = false;
   stopRest();
   renderTrain();
-  toast(`Workout saved \u2014 ${done} sets, ${Math.round(vol).toLocaleString('en')} kg volume \ud83d\udcaa`);
+
+  const lifetime = volBefore + vol;
+  const mile = MILES.find(m=> volBefore < m.v && lifetime >= m.v);
+  showFinish({wname, done, vol, prs, gains, streak: calcStreak(), mile, lifetime});
+}
+
+/* discover which high-five video variants exist (base.mp4 + base-1..5.mp4) */
+let hiveList = null, hiveCat = null;
+function hiveBase(){
+  return profile.gender === 'm' ? 'highfive-f'
+       : profile.gender === 'f' ? 'highfive-m'
+       : 'thumbsup-animal';
+}
+async function discoverHive(){
+  const base = hiveBase();
+  if(hiveCat === base && hiveList) return hiveList;
+  hiveCat = base;
+  const cands = [base + '.mp4'].concat(Array.from({length:5}, (_,i)=> `${base}-${i+1}.mp4`));
+  const found = [];
+  await Promise.all(cands.map(u=>
+    fetch(u, {method:'HEAD'}).then(r=>{ if(r.ok) found.push(u); }).catch(()=>{})
+  ));
+  hiveList = found;
+  return found;
+}
+
+function showFinish(d){
+  $('finSub').textContent = `${d.wname} \u2014 ${d.done} set${d.done===1?'':'s'} \u00b7 ${Math.round(d.vol).toLocaleString('en')} kg volume`;
+  $('finPRs').innerHTML = d.prs.map(p=>
+    `<div class="fin-pr">\ud83c\udfc6 NEW PR \u2014 ${esc(p.name)}: ${esc(p.top)} kg <span class="pct">(+${p.pct.toFixed(1)}%)</span></div>`).join('');
+  $('finGains').textContent = d.gains.length
+    ? 'Also up: ' + d.gains.map(g=> `${g.name} +${Math.round(g.diff*10)/10} kg`).join(' \u00b7 ')
+    : '';
+  $('finStreak').textContent = d.streak >= 2 ? `\ud83d\udd25 ${d.streak}-week streak \u2014 keep it rolling` : '';
+  $('finMile').innerHTML = d.mile
+    ? `<div class="fin-mile">\ud83c\udf89 Milestone: you\u2019ve now lifted <b>${d.mile.v.toLocaleString('en')} kg</b> in total \u2014 that\u2019s ${esc(d.mile.t)}</div>`
+    : '';
+  $('finLifetime').textContent = `Lifetime volume: ${Math.round(d.lifetime).toLocaleString('en')} kg`;
+
+  /* optional high-five video: random pick among the variants that exist in the repo */
+  const v = $('hiveVideo');
+  v.hidden = true;
+  v.onerror = ()=>{ v.hidden = true; };
+  v.oncanplay = ()=>{
+    v.hidden = false;
+    v.muted = false; v.volume = 1;
+    v.play().catch(()=>{ v.muted = true; v.play().catch(()=>{}); });
+  };
+  discoverHive().then(list=>{
+    if(list.length) v.src = list[(Math.random() * list.length) | 0];
+  });
+
+  $('finishBg').classList.add('open');
+  if(!matchMedia('(prefers-reduced-motion: reduce)').matches) confettiBurst();
+  if(navigator.vibrate) navigator.vibrate(d.prs.length ? [120,80,120,80,240] : [120,80,120]);
+}
+$('finClose').addEventListener('click', ()=>{
+  $('finishBg').classList.remove('open');
+  const v = $('hiveVideo'); v.pause(); v.removeAttribute('src'); v.hidden = true;
+});
+
+/* confetti */
+function confettiBurst(){
+  const cv = $('confettiCv'), ctx = cv.getContext('2d');
+  cv.hidden = false;
+  cv.width = innerWidth; cv.height = innerHeight;
+  const colors = ['#ff5a1f','#eeece4','#4c9f5c','#f5c518'];
+  const ps = Array.from({length: 130}, ()=>({
+    x: innerWidth/2 + (Math.random()-.5)*160,
+    y: innerHeight*.35,
+    vx: (Math.random()-.5)*11,
+    vy: -(Math.random()*11 + 5),
+    r: Math.random()*5 + 3,
+    c: colors[(Math.random()*colors.length)|0],
+    a: Math.random()*Math.PI,
+    va: (Math.random()-.5)*.3
+  }));
+  const t0 = performance.now();
+  (function frame(t){
+    const el = t - t0;
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ps.forEach(p=>{
+      p.x += p.vx; p.y += p.vy; p.vy += .32; p.a += p.va;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.a);
+      ctx.fillStyle = p.c;
+      ctx.globalAlpha = Math.max(0, 1 - el/2400);
+      ctx.fillRect(-p.r/2, -p.r/2, p.r, p.r*1.6);
+      ctx.restore();
+    });
+    if(el < 2500) requestAnimationFrame(frame);
+    else { ctx.clearRect(0,0,cv.width,cv.height); cv.hidden = true; }
+  })(t0);
 }
 
 /* ---------- focus mode ---------- */
@@ -1847,7 +2066,7 @@ $('focusBody').addEventListener('click', e=>{
     const s = en.sets[+chk.dataset.s];
     s.done = !s.done;
     saveDrafts();
-    if(s.done) startRest(en.rest);
+    if(s.done && String(en.rest) !== '0') startRest(en.rest);
     renderFocus();
     return;
   }
@@ -1912,12 +2131,21 @@ function openProfile(){
 function closeProfile(){ $('profSheet').classList.remove('open'); document.body.style.overflow = ''; }
 $('avatarBtn').addEventListener('click', openProfile);
 $('profBack').addEventListener('click', closeProfile);
+$('genderSeg').addEventListener('click', e=>{
+  const b = e.target.closest('button[data-g]'); if(!b) return;
+  profile.gender = b.dataset.g;
+  save(LS_PROFILE, profile);
+  $('genderSeg').querySelectorAll('button').forEach(x=> x.classList.toggle('on', x === b));
+  hiveList = null; hiveCat = null;
+  discoverHive();
+});
 
 function latestVal(key){ for(let i = profile.entries.length-1; i >= 0; i--){ const v = profile.entries[i][key]; if(v !== '' && v != null) return v; } return ''; }
 function firstVal(key){ for(const e of profile.entries){ const v = e[key]; if(v !== '' && v != null) return v; } return ''; }
 
 function renderProfile(){
   MEAS.forEach(([k])=>{ $('m_'+k).value = latestVal(k); });
+  $('genderSeg').querySelectorAll('button').forEach(b=> b.classList.toggle('on', b.dataset.g === (profile.gender || '')));
   const rows = MEAS.map(([k, label, unit])=>{
     const a = firstVal(k), b = latestVal(k);
     if(a === '' || b === '' || +a === +b) return '';
@@ -2114,6 +2342,59 @@ $('progressWrap').addEventListener('click', e=>{
   renderProgress();
 });
 
+/* ---------- backup: export & import everything ---------- */
+$('expBtn').addEventListener('click', async ()=>{
+  try{
+    let photos = [];
+    try{ photos = await idbAll(); }catch(e){}
+    const data = {
+      app:'lambell', v:1, exported: new Date().toISOString(),
+      custom, programs, log, profile, drafts, photos
+    };
+    const blob = new Blob([JSON.stringify(data)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `lambell-backup-${todayKey()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=> URL.revokeObjectURL(a.href), 5000);
+    toast('Backup exported \u2014 keep it somewhere safe (e.g. Google Drive)');
+  }catch(err){
+    toast('Export failed');
+  }
+});
+$('impDataBtn').addEventListener('click', ()=> $('impDataFile').click());
+$('impDataFile').addEventListener('change', e=>{
+  const f = e.target.files[0]; e.target.value = '';
+  if(!f) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    let data;
+    try{ data = JSON.parse(reader.result); }catch(err){ toast('That file isn\u2019t a Lambell backup'); return; }
+    if(!data || data.app !== 'lambell'){ toast('That file isn\u2019t a Lambell backup'); return; }
+    askConfirm('Importing replaces ALL current data in the app with the backup. Continue?', async ()=>{
+      try{
+        save(LS_CUSTOM, data.custom || []);
+        save(LS_PROG,   data.programs || []);
+        save(LS_LOG,    data.log || []);
+        save(LS_PROFILE,data.profile || {entries:[]});
+        save(LS_DRAFT,  data.drafts || {});
+        try{
+          const old = await idbAll();
+          await Promise.all(old.map(p=> idbDel(p.id)));
+          await Promise.all((data.photos || []).map(p=> idbPut(p)));
+        }catch(e){}
+        toast('Backup imported \u2014 reloading\u2026');
+        setTimeout(()=> location.reload(), 900);
+      }catch(err){
+        toast('Import failed');
+      }
+    });
+  };
+  reader.readAsText(f);
+});
+
 /* ---------- rest timer ---------- */
 let restEndT = 0, restIv = null, restLastSec = null, restHalf = 0, audioCtx = null;
 
@@ -2211,7 +2492,9 @@ function gotoTab(tab){
 }
 function renderHomeStats(){
   const ex = db.length + custom.length;
-  $('homeStats').innerHTML = `<b>${ex}</b> exercises · <b>${programs.length}</b> program${programs.length===1?'':'s'}`;
+  const st = calcStreak();
+  $('homeStats').innerHTML = `<b>${ex}</b> exercises · <b>${programs.length}</b> program${programs.length===1?'':'s'}`
+    + (st >= 2 ? ` · 🔥 <b>${st}</b>-wk streak` : '');
 }
 $('homeLib').addEventListener('click', ()=> gotoTab('library'));
 $('homePg') .addEventListener('click', ()=> gotoTab('programs'));

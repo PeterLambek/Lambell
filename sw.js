@@ -1,5 +1,5 @@
-/* Lambell service worker — v1 */
-const CACHE = 'lambell-v16';
+/* Lambell service worker — v19 */
+const CACHE = 'lambell-v22';
 const SHELL = ['./index.html', './manifest.json', './icon-192.png', './icon-512.png', './hero.png'];
 
 self.addEventListener('install', e => {
@@ -14,16 +14,20 @@ self.addEventListener('activate', e => {
   );
 });
 
-/* Network-first for own files (always fresh when online, cached when offline).
-   Exercise images/data from GitHub are left to the browser's own cache. */
+/* Network-first for own GET requests (fresh when online, cached when offline).
+   Non-GET (e.g. HEAD probes for videos) pass straight through.
+   Videos are not cached — they'd bloat storage. */
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
-  if (url.origin !== location.origin) return;
+  if (url.origin !== location.origin || e.request.method !== 'GET') return;
+  const isVideo = url.pathname.endsWith('.mp4');
   e.respondWith(
     fetch(e.request)
       .then(res => {
-        const copy = res.clone();
-        caches.open(CACHE).then(c => c.put(e.request, copy));
+        if (!isVideo) {
+          const copy = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, copy)).catch(() => {});
+        }
         return res;
       })
       .catch(() => caches.match(e.request, { ignoreSearch: true })
