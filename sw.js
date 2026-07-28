@@ -1,5 +1,5 @@
 /* Lambell service worker — v19 */
-const CACHE = 'lambell-v30';
+const CACHE = 'lambell-v33';
 const SHELL = ['./index.html', './manifest.json', './icon-192.png', './icon-512.png', './hero.png', './profile-hero-m.jpg', './profile-hero-f.jpg', './profile-hero-animal.jpg', './profile-hero-blank.jpg'];
 
 self.addEventListener('install', e => {

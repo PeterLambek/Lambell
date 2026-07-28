@@ -1935,6 +1935,40 @@ async function discoverHive(){
   return found;
 }
 
+/* finish-screen celebration lines */
+const FINISH_LINES = [
+  'Another one crushed.','Stronger than yesterday.','You showed up. You won.','Built, not wished for.',
+  'Progress earned.','That\u2019s how it\u2019s done.','One step stronger.','Mission complete.',
+  'Work done. Power gained.','You came. You trained. You conquered.',
+  'Iron handled.','Weights defeated.','Muscles loading\u2026','Strength unlocked.','Beast mode complete.',
+  'The iron remembers.','Rep by rep.','Another brick in the build.','Sweat paid off.','The grind is done.',
+  'Congratulations, you survived.','Legs have left the chat.','Walking is now optional.','Sweat happened.',
+  'Calories were harmed.','Your sofa misses you.','Muscles may complain later.','Achievement unlocked: exhausted.',
+  'You lifted things. Impressive.','Rest mode activated.'
+];
+const PANDA_LINES = [
+  'Panda approved!','Maximum fluff. Maximum effort.','Pawsome workout!','You earned a snack.',
+  'High five, champion!','Tiny panda. Big gains.','Fluff mode: victorious.','Panda says: nailed it!',
+  'Strong work, human!','Now go recover.'
+];
+const NAME_LINES = [
+  'Nice one, {name}! 💪','{name}, stronger than yesterday.','Well played, {name}.',
+  '{name} showed up. {name} won.','That\u2019s how it\u2019s done, {name}.',
+  '{name}, the iron remembers.','Respect, {name}.','{name}, mission complete.'
+];
+const NAME_PANDA_LINES = [
+  'Panda approved, {name}!','Strong work, {name}!','{name}, panda says: nailed it!'
+];
+function pickFinishLine(isPanda){
+  let pool = FINISH_LINES.slice();
+  if(isPanda) pool = pool.concat(PANDA_LINES);
+  if(profile.name){
+    pool = pool.concat(NAME_LINES.map(t=> t.replace(/\{name\}/g, profile.name)));
+    if(isPanda) pool = pool.concat(NAME_PANDA_LINES.map(t=> t.replace(/\{name\}/g, profile.name)));
+  }
+  return pool[(Math.random() * pool.length) | 0];
+}
+
 function showFinish(d){
   $('finSub').textContent = `${d.wname} \u2014 ${d.done} set${d.done===1?'':'s'} \u00b7 ${Math.round(d.vol).toLocaleString('en')} kg volume`;
   $('finPRs').innerHTML = d.prs.map(p=>
@@ -1957,11 +1991,15 @@ function showFinish(d){
     v.muted = false; v.volume = 1;
     v.play().catch(()=>{ v.muted = true; v.play().catch(()=>{}); });
   };
-  discoverHive().then(list=>{
-    if(list.length) v.src = list[(Math.random() * list.length) | 0];
-  });
+  $('finClose').textContent = pickFinishLine(false);   /* fallback while video loads / if none exist */
 
-  $('finClose').textContent = profile.name ? `Nice ${profile.name} 💪` : 'Nice 💪';
+  discoverHive().then(list=>{
+    if(list.length){
+      const chosen = list[(Math.random() * list.length) | 0];
+      v.src = chosen;
+      $('finClose').textContent = pickFinishLine(chosen.startsWith('thumbsup-animal'));
+    }
+  });
 
   $('finishBg').classList.add('open');
   if(!matchMedia('(prefers-reduced-motion: reduce)').matches) confettiBurst();
