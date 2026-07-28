@@ -804,7 +804,7 @@ nav.tabs button.on{color:var(--accent)}
 <div class="finish-bg" id="finishBg">
   <div class="finish-card">
     <video id="hiveVideo" playsinline autoplay hidden></video>
-    <div class="anton fin-title">Workout done!</div>
+    <div class="anton fin-title" id="finTitle">Workout done!</div>
     <div class="fin-sub" id="finSub"></div>
     <div id="finPRs"></div>
     <div id="finGains" class="fin-line"></div>
@@ -1869,6 +1869,8 @@ function calcStreak(){
 function finishWorkout(){
   const done = draft.entries.reduce((n,en)=> n + en.sets.filter(s=>s.done).length, 0);
   if(!done){ toast('Mark at least one set with \u2713 first'); return; }
+  const total = draft.entries.reduce((n,en)=> n + en.sets.length, 0);
+  const partial = done < total;
   const vol = draft.entries.reduce((v,en)=> v + en.sets.filter(s=>s.done).reduce((a,s)=> a + ((+s.kg||0)*(+s.reps||0)), 0), 0);
 
   /* PR detection: new best that beats old best by \u22652.5% AND \u22651 kg */
@@ -1904,11 +1906,22 @@ function finishWorkout(){
 
   const lifetime = volBefore + vol;
   const mile = MILES.find(m=> volBefore < m.v && lifetime >= m.v);
-  showFinish({wname, done, vol, prs, gains, streak: calcStreak(), mile, lifetime});
+  showFinish({wname, done, total, partial, vol, prs, gains, streak: calcStreak(), mile, lifetime});
 }
 
 /* discover which high-five video variants exist (base.mp4 + base-1..5.mp4) */
 let hiveList = null, hiveCat = null;
+let prList = null;
+async function discoverPR(){
+  if(prList) return prList;
+  const cands = ['pr-viking.mp4'].concat(Array.from({length:5}, (_,i)=> `pr-viking-${i+1}.mp4`));
+  const found = [];
+  await Promise.all(cands.map(u=>
+    fetch(u, {method:'HEAD'}).then(r=>{ if(r.ok) found.push(u); }).catch(()=>{})
+  ));
+  prList = found;
+  return found;
+}
 function hiveBases(){
   if(profile.celebrant === 'm')     return ['appraise-m'];
   if(profile.celebrant === 'f')     return ['appraise-f'];
@@ -1959,18 +1972,42 @@ const NAME_LINES = [
 const NAME_PANDA_LINES = [
   'Panda approved, {name}!','Strong work, {name}!','{name}, panda says: nailed it!'
 ];
-function pickFinishLine(isPanda){
-  let pool = FINISH_LINES.slice();
-  if(isPanda) pool = pool.concat(PANDA_LINES);
+const PARTIAL_LINES = [
+  'Showed up. That still counts.','Not every day is a PR day.','Partial effort, full respect.',
+  'Some sets beat no sets.','You stopped, but you started.','Progress isn\u2019t always finished.',
+  'Cut short, not cut out.','Half a workout beats a missed one.','Today wasn\u2019t the day. Tomorrow is.',
+  'Still stronger than the couch.','Logged what you had. Fair enough.','The iron will wait for you.'
+];
+const PARTIAL_PANDA_LINES = [
+  'Panda still proud of you!','Small steps, big panda heart.','Panda says: it\u2019s okay!',
+  'Rest now, return stronger.','Panda hugs, not judgment.'
+];
+const PARTIAL_NAME_LINES = [
+  '{name}, that still counts.','Good effort, {name}.','{name}, tomorrow\u2019s a new set.',
+  'No shame, {name}. Show up again.','{name}, the iron will wait.'
+];
+const PARTIAL_NAME_PANDA_LINES = [
+  'Panda\u2019s proud of you, {name}!','{name}, panda says it\u2019s okay!'
+];
+function pickFinishLine(isPanda, isPartial){
+  let pool = (isPartial ? PARTIAL_LINES : FINISH_LINES).slice();
+  if(isPanda) pool = pool.concat(isPartial ? PARTIAL_PANDA_LINES : PANDA_LINES);
   if(profile.name){
-    pool = pool.concat(NAME_LINES.map(t=> t.replace(/\{name\}/g, profile.name)));
-    if(isPanda) pool = pool.concat(NAME_PANDA_LINES.map(t=> t.replace(/\{name\}/g, profile.name)));
+    const nameLines = isPartial ? PARTIAL_NAME_LINES : NAME_LINES;
+    pool = pool.concat(nameLines.map(t=> t.replace(/\{name\}/g, profile.name)));
+    if(isPanda){
+      const namePanda = isPartial ? PARTIAL_NAME_PANDA_LINES : NAME_PANDA_LINES;
+      pool = pool.concat(namePanda.map(t=> t.replace(/\{name\}/g, profile.name)));
+    }
   }
   return pool[(Math.random() * pool.length) | 0];
 }
 
 function showFinish(d){
-  $('finSub').textContent = `${d.wname} \u2014 ${d.done} set${d.done===1?'':'s'} \u00b7 ${Math.round(d.vol).toLocaleString('en')} kg volume`;
+  $('finSub').textContent = d.partial
+    ? `${d.wname} \u2014 ${d.done}/${d.total} sets \u00b7 ${Math.round(d.vol).toLocaleString('en')} kg volume`
+    : `${d.wname} \u2014 ${d.done} set${d.done===1?'':'s'} \u00b7 ${Math.round(d.vol).toLocaleString('en')} kg volume`;
+  $('finTitle').textContent = d.partial ? 'Workout logged' : 'Workout done!';
   $('finPRs').innerHTML = d.prs.map(p=>
     `<div class="fin-pr">\ud83c\udfc6 NEW PR \u2014 ${esc(p.name)}: ${esc(p.top)} kg <span class="pct">(+${p.pct.toFixed(1)}%)</span></div>`).join('');
   $('finGains').textContent = d.gains.length
@@ -1991,19 +2028,31 @@ function showFinish(d){
     v.muted = false; v.volume = 1;
     v.play().catch(()=>{ v.muted = true; v.play().catch(()=>{}); });
   };
-  $('finClose').textContent = pickFinishLine(false);   /* fallback while video loads / if none exist */
+  $('finClose').textContent = pickFinishLine(false, d.partial);   /* fallback while video loads / if none exist */
 
-  discoverHive().then(list=>{
-    if(list.length){
-      const chosen = list[(Math.random() * list.length) | 0];
-      v.src = chosen;
-      $('finClose').textContent = pickFinishLine(chosen.startsWith('thumbsup-animal'));
-    }
-  });
+  function playNormalCelebration(){
+    discoverHive().then(list=>{
+      if(list.length){
+        const chosen = list[(Math.random() * list.length) | 0];
+        v.src = chosen;
+        $('finClose').textContent = pickFinishLine(chosen.startsWith('thumbsup-animal'), d.partial);
+      }
+    });
+  }
+
+  if(d.prs.length){
+    /* significant PR this session: prefer the special Viking celebration if available */
+    discoverPR().then(prs=>{
+      if(prs.length) v.src = prs[(Math.random() * prs.length) | 0];
+      else playNormalCelebration();
+    });
+  } else {
+    playNormalCelebration();
+  }
 
   $('finishBg').classList.add('open');
-  if(!matchMedia('(prefers-reduced-motion: reduce)').matches) confettiBurst();
-  if(navigator.vibrate) navigator.vibrate(d.prs.length ? [120,80,120,80,240] : [120,80,120]);
+  if(!matchMedia('(prefers-reduced-motion: reduce)').matches && !d.partial) confettiBurst();
+  if(navigator.vibrate) navigator.vibrate(d.partial ? [90,60,90] : (d.prs.length ? [120,80,120,80,240] : [120,80,120]));
 }
 $('finClose').addEventListener('click', ()=>{
   $('finishBg').classList.remove('open');
