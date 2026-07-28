@@ -372,10 +372,10 @@ ol.steps li::before{
 .home{position:relative;overflow:hidden}
 .home-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.3;z-index:0;pointer-events:none}
 .home > *:not(.home-video){position:relative;z-index:1}
-.prof-top{position:relative;padding-top:8px;margin:0 -16px;padding-left:16px;padding-right:16px;overflow:hidden;border-radius:0 0 18px 18px}
+.prof-top{position:relative;padding-top:8px;margin:0 -16px;padding-left:16px;padding-right:16px;overflow:hidden;border-radius:0 0 18px 18px;min-height:360px}
 .prof-hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 15%;z-index:0}
 .prof-top::after{content:'';position:absolute;inset:0;z-index:0;background:linear-gradient(180deg, rgba(16,17,20,.35) 0%, rgba(16,17,20,.75) 60%, var(--bg) 100%)}
-.prof-top > *{position:relative;z-index:1}
+.prof-top > *:not(.prof-hero-bg){position:relative;z-index:1}
 
 /* ---------- coming soon ---------- */
 .soon{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
