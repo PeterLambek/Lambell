@@ -1,6 +1,6 @@
 /* Lambell service worker — v19 */
-const CACHE = 'lambell-v27';
-const SHELL = ['./index.html', './manifest.json', './icon-192.png', './icon-512.png', './hero.png', './profile-hero-m.jpg', './profile-hero-f.jpg'];
+const CACHE = 'lambell-v28';
+const SHELL = ['./index.html', './manifest.json', './icon-192.png', './icon-512.png', './hero.png', './profile-hero-m.jpg', './profile-hero-f.jpg', './profile-hero-animal.jpg', './profile-hero-blank.jpg'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));

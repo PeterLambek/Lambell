@@ -2156,7 +2156,8 @@ function updateProfHero(){
   const img = $('profHero');
   const base = profile.gender === 'm' ? 'profile-hero-m'
              : profile.gender === 'f' ? 'profile-hero-f'
-             : 'profile-hero-animal';
+             : profile.gender === ''  ? 'profile-hero-animal'   /* explicitly "doesn't matter" */
+             : 'profile-hero-blank';                            /* nothing chosen yet */
   img.hidden = true;
   img.onerror = ()=>{ img.hidden = true; };
   img.onload  = ()=>{ img.hidden = false; };
