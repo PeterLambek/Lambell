@@ -735,12 +735,20 @@ nav.tabs button.on{color:var(--accent)}
           <input id="profName" type="text" placeholder="Your name" maxlength="30">
         </div>
       </div>
-      <div class="sec-label" style="margin-top:4px">Finish-screen high-five</div>
-      <div class="hint" style="margin-top:-4px">Who high-fives you when you finish a workout?</div>
+      <div class="sec-label" style="margin-top:4px">Your gender</div>
+      <div class="hint" style="margin-top:-4px">Sets the photo above. You can pick who celebrates with you separately below.</div>
       <div class="gender-seg" id="genderSeg">
         <button data-g="m">Man</button>
         <button data-g="f">Woman</button>
         <button data-g="">Doesn't matter!</button>
+      </div>
+      <div class="sec-label">Finish-screen high-five</div>
+      <div class="hint" style="margin-top:-4px">Who should celebrate with you when you finish a workout?</div>
+      <div class="gender-seg" id="celebrantSeg">
+        <button data-c="f">Woman</button>
+        <button data-c="m">Man</button>
+        <button data-c="panda">Panda</button>
+        <button data-c="">Surprise me</button>
       </div>
     </div>
     <div class="sec-label">Body log</div>
@@ -1901,16 +1909,24 @@ function finishWorkout(){
 
 /* discover which high-five video variants exist (base.mp4 + base-1..5.mp4) */
 let hiveList = null, hiveCat = null;
-function hiveBase(){
-  return profile.gender === 'm' ? 'highfive-f'
-       : profile.gender === 'f' ? 'highfive-m'
-       : 'thumbsup-animal';
+function hiveBases(){
+  if(profile.celebrant === 'm')     return ['appraise-m'];
+  if(profile.celebrant === 'f')     return ['appraise-f'];
+  if(profile.celebrant === 'panda') return ['thumbsup-animal'];
+  if(profile.celebrant === '')      return ['appraise-f','appraise-m','thumbsup-animal'];   /* surprise me */
+  /* celebrant never chosen: fall back to old auto behavior based on the user's own gender */
+  return [profile.gender === 'm' ? 'appraise-f' : profile.gender === 'f' ? 'appraise-m' : 'thumbsup-animal'];
 }
 async function discoverHive(){
-  const base = hiveBase();
-  if(hiveCat === base && hiveList) return hiveList;
-  hiveCat = base;
-  const cands = [base + '.mp4'].concat(Array.from({length:5}, (_,i)=> `${base}-${i+1}.mp4`));
+  const bases = hiveBases();
+  const key = bases.join(',');
+  if(hiveCat === key && hiveList) return hiveList;
+  hiveCat = key;
+  const cands = [];
+  bases.forEach(base=>{
+    cands.push(base + '.mp4');
+    for(let i=1;i<=5;i++) cands.push(`${base}-${i}.mp4`);
+  });
   const found = [];
   await Promise.all(cands.map(u=>
     fetch(u, {method:'HEAD'}).then(r=>{ if(r.ok) found.push(u); }).catch(()=>{})
@@ -2168,9 +2184,16 @@ $('genderSeg').addEventListener('click', e=>{
   profile.gender = b.dataset.g;
   save(LS_PROFILE, profile);
   $('genderSeg').querySelectorAll('button').forEach(x=> x.classList.toggle('on', x === b));
+  updateProfHero();
+  if(profile.celebrant === undefined){ hiveList = null; hiveCat = null; discoverHive(); }   /* legacy fallback depends on gender */
+});
+$('celebrantSeg').addEventListener('click', e=>{
+  const b = e.target.closest('button[data-c]'); if(!b) return;
+  profile.celebrant = b.dataset.c;
+  save(LS_PROFILE, profile);
+  $('celebrantSeg').querySelectorAll('button').forEach(x=> x.classList.toggle('on', x === b));
   hiveList = null; hiveCat = null;
   discoverHive();
-  updateProfHero();
 });
 
 function latestVal(key){ for(let i = profile.entries.length-1; i >= 0; i--){ const v = profile.entries[i][key]; if(v !== '' && v != null) return v; } return ''; }
@@ -2180,6 +2203,7 @@ function renderProfile(){
   $('profName').value = profile.name || '';
   MEAS.forEach(([k])=>{ $('m_'+k).value = latestVal(k); });
   $('genderSeg').querySelectorAll('button').forEach(b=> b.classList.toggle('on', b.dataset.g === (profile.gender || '')));
+  $('celebrantSeg').querySelectorAll('button').forEach(b=> b.classList.toggle('on', b.dataset.c === profile.celebrant));
   updateProfHero();
   const rows = MEAS.map(([k, label, unit])=>{
     const a = firstVal(k), b = latestVal(k);
