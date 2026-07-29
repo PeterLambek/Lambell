@@ -363,6 +363,74 @@ ol.steps li::before{
 .hist-row2:active{border-color:var(--accent)}
 .editing-flag{margin:0 16px 8px;font-size:12.5px;color:var(--accent);font-weight:700;display:flex;align-items:center;gap:8px}
 .editing-flag button{color:var(--muted);text-decoration:underline;font-weight:400}
+.bmi-card{margin:0 16px 16px;border-radius:12px;padding:14px;display:flex;align-items:baseline;gap:10px;border:1px solid var(--line);background:var(--card)}
+.bmi-card .bmi-num{font-family:'Anton',Impact,sans-serif;font-size:28px;letter-spacing:.02em}
+.bmi-card .bmi-lbl{font-size:13px;font-weight:600;color:var(--muted)}
+.bmi-card.bmi-green{border-color:#4c9f5c}
+.bmi-card.bmi-green .bmi-num{color:#4c9f5c}
+.bmi-card.bmi-yellow{border-color:#f5c518}
+.bmi-card.bmi-yellow .bmi-num{color:#f5c518}
+.bmi-card.bmi-red{border-color:#d33a3a}
+.bmi-card.bmi-red .bmi-num{color:#d33a3a}
+.prog-back{display:flex;align-items:center;gap:6px;color:var(--accent);font-weight:700;font-size:13px;padding:16px 16px 0}
+
+/* ---------- unit converter ---------- */
+.conv-seg{display:flex;gap:8px;margin:0 0 14px}
+.conv-seg button{flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card-2);font-weight:600;color:var(--muted)}
+.conv-seg button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.conv-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.conv-row input{flex:1;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center;font-size:18px;font-weight:700}
+.conv-row label{flex:none;width:44px;font-weight:700;color:var(--muted);font-size:13px}
+.conv-eq{text-align:center;color:var(--muted);font-size:13px;margin:-4px 0 12px}
+
+/* ---------- circuits / supersets ---------- */
+.grp-row{display:flex;align-items:center;gap:8px;margin-top:8px;padding-left:30px}
+.grp-row select{background:var(--card-2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:13px;color:var(--text)}
+.grp-row .glabel{font-size:11px;color:var(--muted);font-weight:600}
+.exr.grouped{border-left:3px solid var(--accent);padding-left:8px;margin-left:-8px}
+.circuit-card{background:var(--card);border:1px solid var(--accent);border-radius:var(--radius);margin:0 16px 12px;padding:14px}
+.circuit-card .cc-head{display:flex;align-items:baseline;gap:8px;margin-bottom:4px}
+.circuit-card .cc-head .nm{font-weight:700;font-size:16px;color:var(--accent)}
+.circuit-card .cc-head .tgt{color:var(--muted);font-size:12.5px}
+.round-block{margin-top:12px;padding-top:10px;border-top:1px dashed var(--line)}
+.round-block:first-of-type{border-top:none;margin-top:8px;padding-top:0}
+.round-lbl{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
+.round-ex{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.round-ex .en{flex:1;min-width:0;font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;padding:0}
+.round-ex input{width:56px;background:var(--card-2);border:1px solid var(--line);border-radius:7px;padding:7px 4px;text-align:center;font-size:14px;outline:none}
+.round-ex .setchk{width:34px;height:34px;font-size:14px}
+.cc-rounds-ops{display:flex;gap:8px;margin-top:10px}
+.cc-rounds-ops button{flex:1;padding:8px;border:1px dashed var(--line);border-radius:9px;color:var(--muted);font-weight:600;font-size:12.5px;background:none}
+
+/* ---------- weekly summary ---------- */
+.week-card{margin:0 16px 20px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+.week-card h3{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.week-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.week-stats .v{font-family:'Anton',Impact,sans-serif;font-size:22px;color:var(--accent)}
+.week-stats .l{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+
+/* ---------- session note ---------- */
+.note-box{margin:0 16px 14px}
+.note-box textarea{width:100%;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;min-height:60px;outline:none;font-size:14px}
+.note-box textarea:focus{border-color:var(--accent)}
+.note-box label{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+
+/* ---------- smart suggestion ---------- */
+.suggest-box{background:var(--card-2);border:1px solid var(--accent);border-radius:10px;padding:10px 12px;margin-top:8px;font-size:13px;color:#d6d4cc}
+.suggest-box .btnrow{display:flex;gap:8px;margin-top:8px}
+.suggest-box button{flex:1;padding:8px;border-radius:8px;font-weight:700;font-size:12.5px}
+.suggest-box .use{background:var(--accent);color:var(--accent-ink)}
+.suggest-box .dismiss{background:none;border:1px solid var(--line);color:var(--muted)}
+
+/* ---------- units & converter ---------- */
+.unit-toggle{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin-left:8px}
+.unit-toggle button{padding:4px 10px;font-size:11px;font-weight:700;color:var(--muted)}
+.unit-toggle button.on{background:var(--accent);color:var(--accent-ink)}
+.conv-row{display:flex;align-items:center;gap:10px;margin:0 16px 14px}
+.conv-row input{flex:1;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center;font-size:16px;outline:none}
+.conv-row input:focus{border-color:var(--accent)}
+.conv-row .eq{color:var(--muted);font-size:18px}
+.conv-row .u{font-size:12px;color:var(--muted);width:34px}
 
 /* ---------- progress ---------- */
 .pr-chart{margin:0 16px 12px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 12px 8px}
@@ -476,6 +544,7 @@ nav.tabs button.on{color:var(--accent)}
       </div>
       <button class="btn ghost" id="homeProfileCta" style="width:auto;padding:9px 18px;margin-top:10px" hidden>👤 Create your profile</button>
       <div class="home-stats" id="homeStats"></div>
+      <div id="homeWeekly"></div>
     </div>
   </section>
 
@@ -782,6 +851,33 @@ nav.tabs button.on{color:var(--accent)}
       <button class="btn ghost" id="impDataBtn" style="flex:1">Import backup</button>
     </div>
     <input type="file" id="impDataFile" accept="application/json,.json" hidden>
+    <div class="sec-label">Unit converter</div>
+    <div class="hint">Quick one-off conversion — the app itself always logs in kg and cm.</div>
+    <button class="bs-link" id="openConverter">
+      🔁 Convert kg / lbs / cm / in
+      <span class="chev">›</span>
+    </button>
+  </div>
+</div>
+
+<!-- UNIT CONVERTER -->
+<div class="modal-bg" id="convBg">
+  <div class="modal" style="max-width:340px">
+    <h3 class="anton" style="margin-bottom:14px">Unit converter</h3>
+    <div class="conv-seg" id="convSeg">
+      <button data-conv="weight" class="on">Weight</button>
+      <button data-conv="length">Length</button>
+    </div>
+    <div class="conv-row">
+      <label id="convLbl1">kg</label>
+      <input type="number" inputmode="decimal" id="convA" placeholder="0">
+    </div>
+    <div class="conv-eq">=</div>
+    <div class="conv-row">
+      <label id="convLbl2">lb</label>
+      <input type="number" inputmode="decimal" id="convB" placeholder="0">
+    </div>
+    <button class="btn ghost" id="convClose" style="width:100%">Close</button>
   </div>
 </div>
 
@@ -809,6 +905,7 @@ nav.tabs button.on{color:var(--accent)}
       ✏️ Editing an existing entry <button id="cancelEdit">cancel</button>
     </div>
     <div class="addline"><button class="btn" id="measSave" style="width:100%">Log entry</button></div>
+    <div class="bmi-card" id="bmiCard" hidden></div>
     <div id="measDeltas"></div>
     <div class="sec-label">History</div>
     <div class="hint">Tap an entry to edit it.</div>
@@ -853,6 +950,7 @@ nav.tabs button.on{color:var(--accent)}
     <div id="finStreak" class="fin-streak"></div>
     <div id="finMile"></div>
     <div class="fin-line" id="finLifetime" style="color:var(--muted);font-size:12.5px"></div>
+    <div class="fin-line" id="finNote" style="font-style:italic"></div>
     <button class="btn" id="finClose" style="width:100%;margin-top:10px">Nice 💪</button>
   </div>
 </div>
@@ -1301,10 +1399,10 @@ function renderWorkouts(){
       </div>
       <div class="exlist" data-w="${esc(w.id)}">
       ${w.exercises.map((x,i)=>`
-        <div class="exr" data-i="${i}">
+        <div class="exr ${x.grp?'grouped':''}" data-i="${i}">
           <div class="top">
             <span class="grab" aria-label="Drag to reorder">⠿</span>
-            <span class="nm">${esc(x.name)}</span>
+            <span class="nm">${esc(x.name)}${x.grp?` <span style="color:var(--accent);font-weight:700">\u00b7 ${esc(x.grp)}</span>`:''}</span>
             <button class="x" data-w="${esc(w.id)}" data-i="${i}" data-f="xdel" aria-label="Remove exercise">×</button>
           </div>
           <div class="ctrl">
@@ -1315,6 +1413,13 @@ function renderWorkouts(){
             <span class="unit">kg</span>
             <input class="rest" type="number" inputmode="numeric" min="0" max="600" step="5" placeholder="—" value="${esc(x.rest ?? '')}" data-w="${esc(w.id)}" data-i="${i}" data-f="rest" aria-label="Rest (seconds)">
             <span class="unit">s rest</span>
+          </div>
+          <div class="grp-row">
+            <span class="glabel">Superset / circuit:</span>
+            <select data-w="${esc(w.id)}" data-i="${i}" data-f="grp">
+              <option value="">No group</option>
+              ${['A','B','C','D','E'].map(g=> `<option value="${g}" ${x.grp===g?'selected':''}>Group ${g}</option>`).join('')}
+            </select>
           </div>
         </div>`).join('')}
       </div>
@@ -1338,11 +1443,17 @@ $('pgWorkouts').addEventListener('input', e=>{
   if(!w) return;
   if(t.dataset.f === 'wname'){ w.name = t.value; return; }
   const ex = w.exercises[+t.dataset.i]; if(!ex) return;
+  if(t.dataset.f === 'grp') return;   /* handled by the change listener below */
   if(t.dataset.f === 'kg' || t.dataset.f === 'rest') ex[t.dataset.f] = t.value;
   else ex[t.dataset.f] = t.value === '' ? '' : Math.max(1, +t.value);
 });
 $('pgWorkouts').addEventListener('change', e=>{
   if(e.target.dataset.f === 'wname') renderSched();  // keep schedule labels in sync
+  if(e.target.dataset.f === 'grp'){
+    const w = editing.workouts.find(x=> x.id === e.target.dataset.w);
+    const ex = w && w.exercises[+e.target.dataset.i];
+    if(ex){ ex.grp = e.target.value || null; renderWorkouts(); }
+  }
 });
 $('pgWorkouts').addEventListener('click', e=>{
   const t = e.target.closest('[data-f]'); if(!t || !editing) return;
@@ -1755,11 +1866,11 @@ function getOrCreateDraft(p, w){
   const d = drafts[w.id];
   if(d && d.dkey === todayKey() && d.programId === p.id) return d;
   const nd = {
-    dkey: todayKey(), programId: p.id, workoutId: w.id, workoutName: w.name,
+    dkey: todayKey(), programId: p.id, workoutId: w.id, workoutName: w.name, note: '', suggestDismissed: [],
     entries: w.exercises.map(x=>{
       const last = lastFor(x.exId);
       return {
-        exId: x.exId, name: x.name, rest: x.rest, targetSets: x.sets, targetReps: x.reps,
+        exId: x.exId, name: x.name, rest: x.rest, targetSets: x.sets, targetReps: x.reps, grp: x.grp || null,
         sets: Array.from({length: Math.max(1, +x.sets || 3)}, (_, i)=>({
           kg: pf(last, i, 'kg', x.kg), reps: pf(last, i, 'reps', x.reps), done: false
         }))
@@ -1768,6 +1879,31 @@ function getOrCreateDraft(p, w){
   };
   drafts[w.id] = nd; save(LS_DRAFT, drafts);
   return nd;
+}
+
+/* smart weight suggestion — only fires after 3 consecutive logged sessions at the
+   same weight where every set hit the target reps. Deliberately rare and never automatic. */
+function weightSuggestion(en){
+  const sessions = [];
+  for(let i = log.length - 1; i >= 0 && sessions.length < 3; i--){
+    const e2 = log[i].entries.find(x=> x.exId === en.exId);
+    if(e2) sessions.push(e2);
+  }
+  if(sessions.length < 3) return null;
+  const target = +en.targetReps || 0;
+  if(!target) return null;
+  const allGood = sessions.every(s=>{
+    if(!s.sets.length) return false;
+    const allDone = s.sets.every(x=> x.done);
+    const allHitReps = s.sets.every(x=> (+x.reps || 0) >= target);
+    const kgs = s.sets.map(x=> +x.kg || 0);
+    const sameW = kgs.every(k=> k === kgs[0]) && kgs[0] > 0;
+    return allDone && allHitReps && sameW;
+  });
+  if(!allGood) return null;
+  const weights = sessions.map(s=> +s.sets[0].kg);
+  if(!weights.every(w=> w === weights[0])) return null;
+  return { weight: weights[0], bump: 2.5 };
 }
 
 function renderTrain(){
@@ -1816,36 +1952,100 @@ function renderTrain(){
   }
 
   draft = getOrCreateDraft(p, w);
-  wrap.innerHTML = head + draft.entries.map((en, ei)=>{
-    const last = lastFor(en.exId);
-    const lastTxt = last
-      ? 'Last time: ' + last.sets.map(s=> `${(s.kg!==''&&s.kg!=null)?s.kg:'\u2013'}\u00d7${s.reps||'\u2013'}`).join(', ')
-      : 'First time \u2014 set the bar';
-    return `<div class="tr-card">
-      <button class="tt-btn" data-focus="${ei}" aria-label="Open ${esc(en.name)} in focus mode">
-        <span class="nm">${esc(en.name)}</span>
-        <span class="tgt">${esc(en.targetSets)} \u00d7 ${esc(en.targetReps)}${en.rest?` \u00b7 ${esc(en.rest)}s rest`:''}</span>
-        <span class="chev">\u203a</span>
-      </button>
-      <div class="lastline">${esc(lastTxt)}</div>
-      ${en.sets.map((s, si)=>`
-        <div class="setrow ${s.done?'done':''}">
-          <span class="sn">${si+1}</span>
-          <input type="number" inputmode="decimal" step="0.5" min="0" placeholder="\u2013" value="${esc(s.kg??'')}" data-e="${ei}" data-s="${si}" data-f="kg" aria-label="Weight (kg)">
-          <span class="u">kg</span>
-          <input type="number" inputmode="numeric" min="0" placeholder="\u2013" value="${esc(s.reps??'')}" data-e="${ei}" data-s="${si}" data-f="reps" aria-label="Reps">
-          <span class="u">reps</span>
-          <button class="setchk" data-e="${ei}" data-s="${si}" aria-label="Mark set done">\u2713</button>
-        </div>`).join('')}
-      <div class="setops">
-        <button data-addset="${ei}">+ set</button>
-        <button data-remset="${ei}">\u2212 set</button>
+  wrap.innerHTML = head + renderEntryCards(draft.entries)
+    + `<div class="note-box"><label for="sessionNote">Session note (optional)</label><textarea id="sessionNote" placeholder="How did it feel today?">${esc(draft.note||'')}</textarea></div>`
+    + `<div class="finishwrap"><button class="btn" id="finishBtn" style="width:100%">Finish workout</button></div>`;
+}
+
+function renderEntryCards(entries){
+  const consumed = new Set();
+  let html = '';
+  entries.forEach((en, ei)=>{
+    if(consumed.has(ei)) return;
+    if(en.grp){
+      const memberIdxs = entries.map((x,i)=> x.grp === en.grp ? i : -1).filter(i=> i >= 0);
+      memberIdxs.forEach(i=> consumed.add(i));
+      html += renderCircuitCard(entries, memberIdxs, en.grp);
+    } else {
+      consumed.add(ei);
+      html += renderSingleCard(entries, ei);
+    }
+  });
+  return html;
+}
+
+function renderSingleCard(entries, ei){
+  const en = entries[ei];
+  const last = lastFor(en.exId);
+  const lastTxt = last
+    ? 'Last time: ' + last.sets.map(s=> `${(s.kg!==''&&s.kg!=null)?s.kg:'\u2013'}\u00d7${s.reps||'\u2013'}`).join(', ')
+    : 'First time \u2014 set the bar';
+  const sugg = !(draft.suggestDismissed||[]).includes(en.exId) ? weightSuggestion(en) : null;
+  const suggestHtml = sugg ? `<div class="suggest-box">
+      \ud83d\udca1 You\u2019ve hit ${esc(en.targetReps)}+ reps at ${sugg.weight} kg for 3 sessions straight \u2014 maybe try ${sugg.weight+sugg.bump} kg today? Only bump it if your form stays solid.
+      <div class="btnrow">
+        <button class="use" data-usesugg="${ei}" data-suggw="${sugg.weight+sugg.bump}">Use ${sugg.weight+sugg.bump} kg</button>
+        <button class="dismiss" data-dismisssugg="${ei}">Not today</button>
       </div>
-    </div>`;
-  }).join('') + `<div class="finishwrap"><button class="btn" id="finishBtn" style="width:100%">Finish workout</button></div>`;
+    </div>` : '';
+  return `<div class="tr-card">
+    <button class="tt-btn" data-focus="${ei}" aria-label="Open ${esc(en.name)} in focus mode">
+      <span class="nm">${esc(en.name)}</span>
+      <span class="tgt">${esc(en.targetSets)} \u00d7 ${esc(en.targetReps)}${en.rest?` \u00b7 ${esc(en.rest)}s rest`:''}</span>
+      <span class="chev">\u203a</span>
+    </button>
+    <div class="lastline">${esc(lastTxt)}</div>
+    ${suggestHtml}
+    ${en.sets.map((s, si)=>`
+      <div class="setrow ${s.done?'done':''}">
+        <span class="sn">${si+1}</span>
+        <input type="number" inputmode="decimal" step="0.5" min="0" placeholder="\u2013" value="${esc(s.kg??'')}" data-e="${ei}" data-s="${si}" data-f="kg" aria-label="Weight (kg)">
+        <span class="u">kg</span>
+        <input type="number" inputmode="numeric" min="0" placeholder="\u2013" value="${esc(s.reps??'')}" data-e="${ei}" data-s="${si}" data-f="reps" aria-label="Reps">
+        <span class="u">reps</span>
+        <button class="setchk" data-e="${ei}" data-s="${si}" aria-label="Mark set done">\u2713</button>
+      </div>`).join('')}
+    <div class="setops">
+      <button data-addset="${ei}">+ set</button>
+      <button data-remset="${ei}">\u2212 set</button>
+    </div>
+  </div>`;
+}
+
+function renderCircuitCard(entries, memberIdxs, grp){
+  const maxRounds = Math.max(...memberIdxs.map(i=> entries[i].sets.length));
+  const names = memberIdxs.map(i=> entries[i].name).join(' + ');
+  let rounds = '';
+  for(let r = 0; r < maxRounds; r++){
+    rounds += `<div class="round-block"><div class="round-lbl">Round ${r+1}</div>`;
+    memberIdxs.forEach(ei=>{
+      const m = entries[ei];
+      const s = m.sets[r]; if(!s) return;
+      rounds += `<div class="round-ex ${s.done?'done':''}">
+        <button class="en" data-focus="${ei}">${esc(m.name)}</button>
+        <input type="number" inputmode="decimal" step="0.5" min="0" placeholder="\u2013" value="${esc(s.kg??'')}" data-e="${ei}" data-s="${r}" data-f="kg" aria-label="Weight (kg)">
+        <input type="number" inputmode="numeric" min="0" placeholder="\u2013" value="${esc(s.reps??'')}" data-e="${ei}" data-s="${r}" data-f="reps" aria-label="Reps">
+        <button class="setchk" data-e="${ei}" data-s="${r}" aria-label="Mark set done">\u2713</button>
+      </div>`;
+    });
+    rounds += `</div>`;
+  }
+  return `<div class="circuit-card">
+    <div class="cc-head"><span class="nm">Circuit ${esc(grp)}</span><span class="tgt">${memberIdxs.length} exercises \u00b7 ${maxRounds} round${maxRounds===1?'':'s'} \u00b7 no rest between exercises</span></div>
+    <div class="hint" style="margin:0 0 4px">${esc(names)}</div>
+    ${rounds}
+    <div class="cc-rounds-ops">
+      <button data-addround="${esc(grp)}">+ round</button>
+      <button data-remround="${esc(grp)}">\u2212 round</button>
+    </div>
+  </div>`;
 }
 
 $('trainWrap').addEventListener('input', e=>{
+  if(e.target.id === 'sessionNote'){
+    if(draft){ draft.note = e.target.value; saveDrafts(); }
+    return;
+  }
   const t = e.target;
   if(!draft || !t.dataset.f) return;
   const en = draft.entries[+t.dataset.e]; if(!en) return;
@@ -1866,9 +2066,52 @@ $('trainWrap').addEventListener('click', e=>{
     const s = en.sets[+chk.dataset.s];
     s.done = !s.done;
     saveDrafts();
-    if(s.done && String(en.rest) !== '0') startRest(en.rest);
+    if(s.done){
+      if(en.grp){
+        const roundIdx = +chk.dataset.s;
+        const members = draft.entries.filter(x=> x.grp === en.grp);
+        const roundComplete = members.every(m=> m.sets[roundIdx] && m.sets[roundIdx].done);
+        if(roundComplete && String(en.rest) !== '0') startRest(en.rest);
+      } else if(String(en.rest) !== '0'){
+        startRest(en.rest);
+      }
+    }
     renderTrain();
     return;
+  }
+  const use = e.target.closest('[data-usesugg]');
+  if(use && draft){
+    const ei = +use.dataset.usesugg, wgt = +use.dataset.suggw;
+    const en = draft.entries[ei];
+    en.sets.forEach(s=>{ if(!s.done) s.kg = wgt; });
+    if(!draft.suggestDismissed) draft.suggestDismissed = [];
+    draft.suggestDismissed.push(en.exId);
+    saveDrafts(); renderTrain(); return;
+  }
+  const dis = e.target.closest('[data-dismisssugg]');
+  if(dis && draft){
+    const en = draft.entries[+dis.dataset.dismisssugg];
+    if(!draft.suggestDismissed) draft.suggestDismissed = [];
+    draft.suggestDismissed.push(en.exId);
+    saveDrafts(); renderTrain(); return;
+  }
+  const addr = e.target.closest('[data-addround]');
+  if(addr && draft){
+    const g = addr.dataset.addround;
+    draft.entries.filter(x=> x.grp === g).forEach(en=>{
+      const ls = en.sets[en.sets.length - 1];
+      en.sets.push({kg: ls ? ls.kg : '', reps: ls ? ls.reps : en.targetReps, done: false});
+    });
+    saveDrafts(); renderTrain(); return;
+  }
+  const remr = e.target.closest('[data-remround]');
+  if(remr && draft){
+    const g = remr.dataset.remround;
+    const members = draft.entries.filter(x=> x.grp === g);
+    if(members.every(m=> m.sets.length > 1)){
+      members.forEach(m=> m.sets.pop());
+      saveDrafts(); renderTrain(); return;
+    }
   }
   const add = e.target.closest('[data-addset]');
   if(add && draft){
@@ -1898,20 +2141,27 @@ const MILES = [
 function sessVol(s){
   return s.entries.reduce((v, e)=> v + e.sets.filter(x=> x.done).reduce((a, x)=> a + ((+x.kg||0)*(+x.reps||0)), 0), 0);
 }
+function weekStartOf(dkey){
+  const dt = new Date(dkey + 'T12:00:00');
+  dt.setDate(dt.getDate() - ((dt.getDay()+6)%7));
+  return dt.toISOString().slice(0,10);
+}
 function calcStreak(){
   const mondays = new Set();
-  const monKey = dkey=>{
-    const dt = new Date(dkey + 'T12:00:00');
-    dt.setDate(dt.getDate() - ((dt.getDay()+6)%7));
-    return dt.toISOString().slice(0,10);
-  };
-  log.forEach(s=> mondays.add(monKey(s.dkey)));
-  let cur = new Date(monKey(todayKey()) + 'T12:00:00'), n = 0;
+  log.forEach(s=> mondays.add(weekStartOf(s.dkey)));
+  let cur = new Date(weekStartOf(todayKey()) + 'T12:00:00'), n = 0;
   while(mondays.has(cur.toISOString().slice(0,10))){
     n++;
     cur.setDate(cur.getDate() - 7);
   }
   return n;
+}
+function weeklySummary(){
+  const thisWeek = weekStartOf(todayKey());
+  const sessions = log.filter(s=> weekStartOf(s.dkey) === thisWeek);
+  const vol = sessions.reduce((a,s)=> a + sessVol(s), 0);
+  const prs = sessions.reduce((a,s)=> a + (s.prCount||0), 0);
+  return { count: sessions.length, vol, prs };
 }
 
 function finishWorkout(){
@@ -1939,9 +2189,11 @@ function finishWorkout(){
   });
 
   const volBefore = log.reduce((a, s)=> a + sessVol(s), 0);
+  const noteVal = ($('sessionNote') ? $('sessionNote').value.trim() : (draft.note || ''));
   log.push({
     id:'s_'+Date.now(), date: new Date().toISOString(), dkey: todayKey(),
     programId: draft.programId, workoutId: draft.workoutId, workoutName: draft.workoutName,
+    note: noteVal, prCount: prs.length,
     entries: draft.entries.map(en=>({ exId: en.exId, name: en.name,
       sets: en.sets.map(s=>({kg:s.kg, reps:s.reps, done:!!s.done})) }))
   });
@@ -1954,7 +2206,7 @@ function finishWorkout(){
 
   const lifetime = volBefore + vol;
   const mile = MILES.find(m=> volBefore < m.v && lifetime >= m.v);
-  showFinish({wname, done, total, partial, vol, prs, gains, streak: calcStreak(), mile, lifetime});
+  showFinish({wname, done, total, partial, vol, prs, gains, streak: calcStreak(), mile, lifetime, note: noteVal});
 }
 
 /* discover which high-five video variants exist (base.mp4 + base-1..5.mp4) */
@@ -2066,6 +2318,7 @@ function showFinish(d){
     ? `<div class="fin-mile">\ud83c\udf89 Milestone: you\u2019ve now lifted <b>${d.mile.v.toLocaleString('en')} kg</b> in total \u2014 that\u2019s ${esc(d.mile.t)}</div>`
     : '';
   $('finLifetime').textContent = `Lifetime volume: ${Math.round(d.lifetime).toLocaleString('en')} kg`;
+  $('finNote').textContent = d.note ? `\u201c${d.note}\u201d` : '';
 
   /* optional high-five video: random pick among the variants that exist in the repo */
   const v = $('hiveVideo');
@@ -2233,7 +2486,16 @@ $('focusBody').addEventListener('click', e=>{
     const s = en.sets[+chk.dataset.s];
     s.done = !s.done;
     saveDrafts();
-    if(s.done && String(en.rest) !== '0') startRest(en.rest);
+    if(s.done){
+      if(en.grp){
+        const roundIdx = +chk.dataset.s;
+        const members = draft.entries.filter(x=> x.grp === en.grp);
+        const roundComplete = members.every(m=> m.sets[roundIdx] && m.sets[roundIdx].done);
+        if(roundComplete && String(en.rest) !== '0') startRest(en.rest);
+      } else if(String(en.rest) !== '0'){
+        startRest(en.rest);
+      }
+    }
     renderFocus();
     return;
   }
@@ -2287,7 +2549,7 @@ function shrinkImage(file, maxDim, quality){
   });
 }
 
-const MEAS = [['w','Weight','kg'],['ch','Chest','cm'],['wa','Waist','cm'],['hi','Glutes','cm'],['bi','Biceps','cm'],['th','Thigh','cm']];
+const MEAS = [['w','Weight','kg'],['ht','Height','cm'],['ch','Chest','cm'],['wa','Waist','cm'],['hi','Glutes','cm'],['bi','Biceps','cm'],['th','Thigh','cm']];
 let editingEntryId = null;
 
 function fieldDefs(){ return MEAS.concat(profile.customFields.map(f=> [f.key, f.label, f.unit])); }
@@ -2423,7 +2685,25 @@ function loadEntryForEdit(id){
 function latestVal(key){ const s = sortedEntries(); for(let i = s.length-1; i >= 0; i--){ const v = s[i][key]; if(v !== '' && v != null) return v; } return ''; }
 function firstVal(key){ for(const e of sortedEntries()){ const v = e[key]; if(v !== '' && v != null) return v; } return ''; }
 
+function bmiCategory(bmi){
+  if(bmi < 18.5) return {label:'Underweight', cls:'yellow'};
+  if(bmi < 25)   return {label:'Normal', cls:'green'};
+  if(bmi < 30)   return {label:'Overweight', cls:'yellow'};
+  return {label:'Obese', cls:'red'};
+}
+function renderBMI(){
+  const el = $('bmiCard');
+  const w = latestVal('w'), h = latestVal('ht');
+  if(w === '' || h === '' || +h <= 0){ el.hidden = true; return; }
+  const bmi = (+w) / ((+h / 100) ** 2);
+  const cat = bmiCategory(bmi);
+  el.hidden = false;
+  el.className = 'bmi-card bmi-' + cat.cls;
+  el.innerHTML = `<span class="bmi-num">${bmi.toFixed(1)}</span><span class="bmi-lbl">BMI \u00b7 ${cat.label}</span>`;
+}
+
 function renderMeasDeltasAndHistory(){
+  renderBMI();
   const rows = fieldDefs().map(([k, label, unit])=>{
     const a = firstVal(k), b = latestVal(k);
     if(a === '' || b === '' || +a === +b) return '';
@@ -2448,6 +2728,7 @@ function renderMeasDeltasAndHistory(){
 $('measDeltas').addEventListener('click', e=>{
   const b = e.target.closest('[data-metric]'); if(!b) return;
   progressSel = '__body:' + b.dataset.metric;
+  progressBackToProfile = true;
   closeBodyStats();
   closeProfile();
   gotoTab('progress');
@@ -2571,6 +2852,7 @@ $('pvDelete').addEventListener('click', ()=>{
    ============================================================ */
 let progressSel = null;
 let progressRange = 'all';   /* 'all' | '3w' | '3m' */
+let progressBackToProfile = false;
 
 function bodyPointsFor(key){
   return sortedEntries()
@@ -2618,12 +2900,13 @@ function renderProgress(){
   const rangeChips = `<div class="tr-chips" style="padding-top:4px">${[['3w','3W'],['3m','3M'],['all','All']].map(([k,l])=>
     `<button class="chip ${progressRange===k?'on':''}" data-prange="${k}">${l}</button>`
   ).join('')}</div>`;
+  const backLink = progressBackToProfile ? `<button class="prog-back" id="progBackBtn">\u2190 Back to profile</button>` : '';
 
   if(progressSel.startsWith('__body:')){
     const key = progressSel.slice(7);
     const raw = bodyPointsFor(key);
     if(!raw.length){
-      wrap.innerHTML = chips + rangeChips + `<div class="hint" style="margin:16px">No data logged for this yet.</div>`;
+      wrap.innerHTML = backLink + chips + rangeChips + `<div class="hint" style="margin:16px">No data logged for this yet.</div>`;
       return;
     }
     const filtered = applyRange(raw);
@@ -2635,7 +2918,7 @@ function renderProgress(){
       [(delta > 0 ? '+' : '') + delta, 'change'],
       [filtered.length, 'logs']
     ];
-    wrap.innerHTML = `<div class="tr-head"><div class="sub">Progress</div><h2 class="anton">${esc(chipLabel(progressSel))}</h2></div>`
+    wrap.innerHTML = backLink + `<div class="tr-head"><div class="sub">Progress</div><h2 class="anton">${esc(chipLabel(progressSel))}</h2></div>`
       + chips + rangeChips
       + `<div class="pr-chart">${svgChart(filtered.map(p=>({d:p.d, v:p.v})), unit)}</div>`
       + `<div class="pr-stats">${stats.map(([v, l])=>`<div class="pr-stat"><div class="v">${esc(v)}</div><div class="l">${esc(l)}</div></div>`).join('')}</div>`;
@@ -2653,12 +2936,14 @@ function renderProgress(){
     [filtered.length, 'sessions']
   ];
 
-  wrap.innerHTML = `<div class="tr-head"><div class="sub">Progress</div><h2 class="anton">${esc(progressSel)}</h2></div>`
+  wrap.innerHTML = backLink + `<div class="tr-head"><div class="sub">Progress</div><h2 class="anton">${esc(progressSel)}</h2></div>`
     + chips + rangeChips
     + `<div class="pr-chart">${svgChart(pts, 'kg')}</div>`
     + `<div class="pr-stats">${stats.map(([v, l])=>`<div class="pr-stat"><div class="v">${esc(v)}</div><div class="l">${esc(l)}</div></div>`).join('')}</div>`;
 }
 $('progressWrap').addEventListener('click', e=>{
+  const back = e.target.closest('#progBackBtn');
+  if(back){ progressBackToProfile = false; openProfile(); openBodyStats(); return; }
   const r = e.target.closest('[data-prange]');
   if(r){ progressRange = r.dataset.prange; renderProgress(); return; }
   const c = e.target.closest('[data-pchip]'); if(!c) return;
@@ -2707,6 +2992,32 @@ function svgChart(pts, unit){
     <text x="${W-PR}" y="${PT+2}" font-size="10" fill="#8b8f97" text-anchor="end">${esc(unit)}</text>
   </svg>`;
 }
+
+/* ---------- quick unit converter (one-off, doesn't touch stored data) ---------- */
+let convMode = 'weight';
+const CONV = {
+  weight: {l1:'kg', l2:'lb', toB: v=> v * 2.2046226218, toA: v=> v / 2.2046226218},
+  length: {l1:'cm', l2:'in', toB: v=> v / 2.54,          toA: v=> v * 2.54}
+};
+function openConverter(){ $('convBg').classList.add('open'); }
+$('openConverter').addEventListener('click', openConverter);
+$('convClose').addEventListener('click', ()=> $('convBg').classList.remove('open'));
+$('convSeg').addEventListener('click', e=>{
+  const b = e.target.closest('[data-conv]'); if(!b) return;
+  convMode = b.dataset.conv;
+  $('convSeg').querySelectorAll('button').forEach(x=> x.classList.toggle('on', x === b));
+  $('convLbl1').textContent = CONV[convMode].l1;
+  $('convLbl2').textContent = CONV[convMode].l2;
+  $('convA').value = ''; $('convB').value = '';
+});
+$('convA').addEventListener('input', e=>{
+  const v = parseFloat(e.target.value);
+  $('convB').value = isNaN(v) ? '' : (Math.round(CONV[convMode].toB(v) * 100) / 100);
+});
+$('convB').addEventListener('input', e=>{
+  const v = parseFloat(e.target.value);
+  $('convA').value = isNaN(v) ? '' : (Math.round(CONV[convMode].toA(v) * 100) / 100);
+});
 
 /* ---------- backup: export & import everything ---------- */
 $('expBtn').addEventListener('click', async ()=>{
@@ -2834,6 +3145,7 @@ $('restPlus').addEventListener('click', ()=>{
 const SOON = {};
 document.querySelector('nav.tabs').addEventListener('click', e=>{
   const b = e.target.closest('button[data-tab]'); if(!b) return;
+  progressBackToProfile = false;
   gotoTab(b.dataset.tab);
 });
 function gotoTab(tab){
@@ -2856,6 +3168,18 @@ function gotoTab(tab){
   }
   window.scrollTo({top:0});
 }
+function renderHomeWeekly(){
+  const s = weeklySummary();
+  if(!s.count){ $('homeWeekly').innerHTML = ''; return; }
+  $('homeWeekly').innerHTML = `<div class="week-card">
+    <h3>This week</h3>
+    <div class="week-stats">
+      <div><div class="v">${s.count}</div><div class="l">workout${s.count===1?'':'s'}</div></div>
+      <div><div class="v">${Math.round(s.vol).toLocaleString('en')}</div><div class="l">kg volume</div></div>
+      <div><div class="v">${s.prs}</div><div class="l">PR${s.prs===1?'':'s'}</div></div>
+    </div>
+  </div>`;
+}
 function renderHomeStats(){
   const ex = db.length + custom.length;
   const st = calcStreak();
@@ -2865,6 +3189,7 @@ function renderHomeStats(){
     ? `Hey ${esc(profile.name)}.<br>Let's lift.`
     : `Log it.<br>Lift more.`;
   $('homeProfileCta').hidden = !!(profile.name || profile.gender || hasAvatar);
+  renderHomeWeekly();
 }
 $('homeProfileCta').addEventListener('click', openProfile);
 $('homeLib').addEventListener('click', ()=> gotoTab('library'));
@@ -2874,6 +3199,7 @@ $('homePg') .addEventListener('click', ()=> gotoTab('programs'));
 document.addEventListener('keydown', e=>{
   if(e.key==='Escape'){
     if($('photoBg').classList.contains('open')){ $('photoBg').classList.remove('open'); return; }
+    if($('convBg').classList.contains('open')){ $('convBg').classList.remove('open'); return; }
     if($('bodyStatsSheet').classList.contains('open')){ closeBodyStats(); return; }
     if($('profSheet').classList.contains('open')){ closeProfile(); return; }
     if($('focusSheet').classList.contains('open')){ closeFocus(); return; }
