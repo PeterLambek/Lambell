@@ -330,7 +330,8 @@ ol.steps li::before{
 .meas-grid label{display:block;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
 .meas-grid input{width:100%;background:var(--card);border:1px solid var(--line);border-radius:9px;padding:10px 6px;text-align:center;outline:none}
 .meas-grid input:focus{border-color:var(--accent)}
-.delta-row{display:flex;justify-content:space-between;gap:10px;margin:0 16px 6px;font-size:13.5px;color:var(--muted)}
+.delta-row{display:flex;justify-content:space-between;gap:10px;margin:0 16px 6px;font-size:13.5px;color:var(--muted);width:calc(100% - 32px);text-align:left}
+.delta-row:active{color:var(--accent)}
 .delta-row b{color:var(--text)}
 .delta-row i{font-style:normal;font-weight:700}
 .delta-row i.down{color:#4c9f5c}
@@ -2427,7 +2428,7 @@ function renderMeasDeltasAndHistory(){
     const a = firstVal(k), b = latestVal(k);
     if(a === '' || b === '' || +a === +b) return '';
     const d = Math.round((+b - +a) * 10) / 10;
-    return `<div class="delta-row"><span>${esc(label)}</span><span>${a} \u2192 <b>${b}</b>${unit ? ' '+esc(unit) : ''} <i class="${d < 0 ? 'down' : 'up'}">${d > 0 ? '+' : ''}${d}</i></span></div>`;
+    return `<button class="delta-row" data-metric="${esc(k)}"><span>${esc(label)}</span><span>${a} \u2192 <b>${b}</b>${unit ? ' '+esc(unit) : ''} <i class="${d < 0 ? 'down' : 'up'}">${d > 0 ? '+' : ''}${d}</i></span></button>`;
   }).filter(Boolean).join('');
   $('measDeltas').innerHTML = rows ? `<div class="sec-label">Since first log</div>` + rows : '';
 
@@ -2444,6 +2445,13 @@ function renderMeasDeltasAndHistory(){
   }).join('');
   $('measHist').innerHTML = rows2 || '<div class="hint">No entries yet.</div>';
 }
+$('measDeltas').addEventListener('click', e=>{
+  const b = e.target.closest('[data-metric]'); if(!b) return;
+  progressSel = '__body:' + b.dataset.metric;
+  closeBodyStats();
+  closeProfile();
+  gotoTab('progress');
+});
 $('measHist').addEventListener('click', e=>{
   const delBtn = e.target.closest('[data-delentry]');
   if(delBtn){
