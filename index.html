@@ -1370,6 +1370,7 @@ function openDetail(ex, fromPicker){
   $('dDelete').hidden = !isCustom;
   $('dShare').hidden = !isCustom;
   $('detailSheet').classList.add('open');
+  pushOverlayState();
   $('detailSheet').scrollTop = 0;
   document.body.style.overflow = 'hidden';
 }
@@ -1442,6 +1443,7 @@ function openForm(pickerTarget){
   formPickerTarget = pickerTarget || null;
   $('formSheet').classList.toggle('above', !!formPickerTarget);
   $('formSheet').classList.add('open');
+  pushOverlayState();
   document.body.style.overflow = 'hidden';
   setTimeout(()=> $('cName').focus(), 250);
 }
@@ -1567,6 +1569,7 @@ function openEditor(p){
   $('pgDelete').hidden = !programs.some(x=>x.id===p.id);
   renderEditor();
   $('pgSheet').classList.add('open');
+  pushOverlayState();
   $('pgSheet').scrollTop = 0;
   document.body.style.overflow = 'hidden';
 }
@@ -1706,6 +1709,7 @@ function askConfirm(msg, cb){
   $('confirmMsg').textContent = msg;
   confirmCb = cb;
   $('confirmBg').classList.add('open');
+  pushOverlayState();
 }
 $('confirmNo').addEventListener('click', ()=>{ $('confirmBg').classList.remove('open'); confirmCb = null; });
 $('confirmYes').addEventListener('click', ()=>{
@@ -1730,6 +1734,7 @@ function openPicker(wid){
   $('pickQ').value = '';
   renderPick();
   $('pickSheet').classList.add('open');
+  pushOverlayState();
   $('pickSheet').scrollTop = 0;
 }
 function closePicker(){ $('pickSheet').classList.remove('open'); }
@@ -2062,6 +2067,7 @@ $('pgShare').addEventListener('click', async ()=>{
 function closeImport(){ $('impSheet').classList.remove('open'); document.body.style.overflow=''; }
 $('pgImport').addEventListener('click', ()=>{
   $('impSheet').classList.add('open');
+  pushOverlayState();
   document.body.style.overflow='hidden';
   setTimeout(()=> $('impText').focus(), 250);
 });
@@ -2135,6 +2141,7 @@ $('impGo').addEventListener('click', async ()=>{
 });
 $('libImport').addEventListener('click', ()=>{
   $('impSheet').classList.add('open', 'above');
+  pushOverlayState();
   document.body.style.overflow='hidden';
   setTimeout(()=> $('impText').focus(), 250);
 });
@@ -2664,6 +2671,7 @@ function showFinish(d){
   }
 
   $('finishBg').classList.add('open');
+  pushOverlayState();
   if(!matchMedia('(prefers-reduced-motion: reduce)').matches && !d.partial && profile.settings.confetti) confettiBurst();
   if(navigator.vibrate) navigator.vibrate(d.partial ? [90,60,90] : (d.prs.length ? [120,80,120,80,240] : [120,80,120]));
 }
@@ -2795,6 +2803,7 @@ let focusIdx = -1, focusImgIdx = 0, focusImgs = [], focusCycle = null;
 function openFocus(i){
   focusIdx = i;
   $('focusSheet').classList.add('open');
+  pushOverlayState();
   $('focusSheet').scrollTop = 0;
   document.body.style.overflow = 'hidden';
   renderFocus();
@@ -2968,6 +2977,7 @@ function toDtLocal(d){
 
 function openProfile(){
   $('profSheet').classList.add('open');
+  pushOverlayState();
   $('profSheet').scrollTop = 0;
   document.body.style.overflow = 'hidden';
   renderProfile();
@@ -3018,6 +3028,7 @@ function renderProfile(){
 /* ---------- Body Stats child page ---------- */
 function openBodyStats(){
   $('bodyStatsSheet').classList.add('open', 'above');
+  pushOverlayState();
   $('bodyStatsSheet').scrollTop = 0;
   renderBodyStats();
 }
@@ -3233,6 +3244,7 @@ async function openPhoto(id){
     $('pvImg').src = p.data;
     $('pvDate').textContent = p.dkey;
     $('photoBg').classList.add('open');
+    pushOverlayState();
   }catch(e){}
 }
 $('pvClose').addEventListener('click', ()=>{ $('photoBg').classList.remove('open'); pvId = null; });
@@ -3403,6 +3415,7 @@ $('resetAppBtn').addEventListener('click', ()=>{
 });
 function openSettings(){
   $('settingsSheet').classList.add('open', 'above');
+  pushOverlayState();
   $('settingsSheet').scrollTop = 0;
   renderSettings();
 }
@@ -3479,6 +3492,7 @@ function openConverter(mode){
     $('convA').value = ''; $('convB').value = '';
   }
   $('convBg').classList.add('open');
+  pushOverlayState();
 }
 $('openConverter').addEventListener('click', ()=> openConverter());
 $('pgOpenConverter').addEventListener('click', ()=> openConverter('weight'));
@@ -3678,20 +3692,39 @@ $('homeProfileCta').addEventListener('click', openProfile);
 $('homeLib').addEventListener('click', ()=> gotoTab('library'));
 $('homePg') .addEventListener('click', ()=> gotoTab('programs'));
 
-/* close sheets on escape (desktop) */
-document.addEventListener('keydown', e=>{
-  if(e.key==='Escape'){
-    if($('photoBg').classList.contains('open')){ $('photoBg').classList.remove('open'); return; }
-    if($('convBg').classList.contains('open')){ $('convBg').classList.remove('open'); return; }
-    if($('settingsSheet').classList.contains('open')){ closeSettings(); return; }
-    if($('bodyStatsSheet').classList.contains('open')){ closeBodyStats(); return; }
-    if($('profSheet').classList.contains('open')){ closeProfile(); return; }
-    if($('focusSheet').classList.contains('open')){ closeFocus(); return; }
-    if($('pickSheet').classList.contains('open')){ closePicker(); return; }
-    if($('impSheet').classList.contains('open')){ closeImport(); return; }
-    closeDetail(); closeForm();
+/* close the topmost open overlay — shared by Escape (desktop) and the phone's back button/gesture */
+function closeTopOverlay(){
+  if($('finishBg').classList.contains('open')){
+    $('finishBg').classList.remove('open');
+    const v = $('hiveVideo'); v.pause(); v.removeAttribute('src'); v.hidden = true;
+    return true;
   }
+  if($('confirmBg').classList.contains('open')){ $('confirmBg').classList.remove('open'); confirmCb = null; return true; }
+  if($('photoBg').classList.contains('open')){ $('photoBg').classList.remove('open'); pvId = null; return true; }
+  if($('convBg').classList.contains('open')){ $('convBg').classList.remove('open'); return true; }
+  if($('settingsSheet').classList.contains('open')){ closeSettings(); return true; }
+  if($('bodyStatsSheet').classList.contains('open')){ closeBodyStats(); return true; }
+  if($('detailSheet').classList.contains('open') && $('detailSheet').classList.contains('above')){ closeDetail(); return true; }
+  if($('formSheet').classList.contains('open') && $('formSheet').classList.contains('above')){ closeForm(); return true; }
+  if($('impSheet').classList.contains('open') && $('impSheet').classList.contains('above')){ closeImport(); return true; }
+  if($('pickSheet').classList.contains('open')){ closePicker(); return true; }
+  if($('impSheet').classList.contains('open')){ closeImport(); return true; }
+  if($('profSheet').classList.contains('open')){ closeProfile(); return true; }
+  if($('focusSheet').classList.contains('open')){ closeFocus(); return true; }
+  if($('pgSheet').classList.contains('open')){ closeEditor(); return true; }
+  if($('detailSheet').classList.contains('open')){ closeDetail(); return true; }
+  if($('formSheet').classList.contains('open')){ closeForm(); return true; }
+  return false;
+}
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape') closeTopOverlay();
 });
+
+/* trap the phone's back button/gesture: closes the open panel instead of leaving the app */
+function pushOverlayState(){
+  history.pushState({lambellOverlay:true}, '', location.href);
+}
+window.addEventListener('popstate', ()=>{ closeTopOverlay(); });
 </script>
 </body>
 </html>
