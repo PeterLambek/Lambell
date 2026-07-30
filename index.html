@@ -734,6 +734,10 @@ nav.tabs button.on{color:var(--accent)}
         <button id="wkPlus" aria-label="More weeks">+</button>
       </div>
     </div>
+    <div style="margin:0 16px 4px"><button class="bs-link" id="pgOpenConverter" style="margin:0">
+      🔁 kg ⇄ lb converter
+      <span class="chev">›</span>
+    </button></div>
     <div class="sec-label">Workouts</div>
     <div id="pgWorkouts"></div>
     <div class="addline"><button class="btn ghost" id="pgAddWorkout" style="width:100%">+ Add workout</button></div>
@@ -2999,8 +3003,18 @@ const CONV = {
   weight: {l1:'kg', l2:'lb', toB: v=> v * 2.2046226218, toA: v=> v / 2.2046226218},
   length: {l1:'cm', l2:'in', toB: v=> v / 2.54,          toA: v=> v * 2.54}
 };
-function openConverter(){ $('convBg').classList.add('open'); }
-$('openConverter').addEventListener('click', openConverter);
+function openConverter(mode){
+  if(mode && mode !== convMode){
+    convMode = mode;
+    $('convSeg').querySelectorAll('button').forEach(x=> x.classList.toggle('on', x.dataset.conv === mode));
+    $('convLbl1').textContent = CONV[convMode].l1;
+    $('convLbl2').textContent = CONV[convMode].l2;
+    $('convA').value = ''; $('convB').value = '';
+  }
+  $('convBg').classList.add('open');
+}
+$('openConverter').addEventListener('click', ()=> openConverter());
+$('pgOpenConverter').addEventListener('click', ()=> openConverter('weight'));
 $('convClose').addEventListener('click', ()=> $('convBg').classList.remove('open'));
 $('convSeg').addEventListener('click', e=>{
   const b = e.target.closest('[data-conv]'); if(!b) return;
