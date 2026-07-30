@@ -955,6 +955,7 @@ nav.tabs button.on{color:var(--accent)}
     <div id="finMile"></div>
     <div class="fin-line" id="finLifetime" style="color:var(--muted);font-size:12.5px"></div>
     <div class="fin-line" id="finNote" style="font-style:italic"></div>
+    <button class="btn ghost" id="finShare" style="width:100%;margin-top:10px" hidden>📤 Share PR</button>
     <button class="btn" id="finClose" style="width:100%;margin-top:10px">Nice 💪</button>
   </div>
 </div>
@@ -2322,6 +2323,8 @@ function showFinish(d){
     ? `<div class="fin-mile">\ud83c\udf89 Milestone: you\u2019ve now lifted <b>${d.mile.v.toLocaleString('en')} kg</b> in total \u2014 that\u2019s ${esc(d.mile.t)}</div>`
     : '';
   $('finLifetime').textContent = `Lifetime volume: ${Math.round(d.lifetime).toLocaleString('en')} kg`;
+  lastPRForShare = d.prs.length ? d.prs[0] : null;
+  $('finShare').hidden = !lastPRForShare;
   $('finNote').textContent = d.note ? `\u201c${d.note}\u201d` : '';
 
   /* optional high-five video: random pick among the variants that exist in the repo */
@@ -2362,6 +2365,90 @@ function showFinish(d){
 $('finClose').addEventListener('click', ()=>{
   $('finishBg').classList.remove('open');
   const v = $('hiveVideo'); v.pause(); v.removeAttribute('src'); v.hidden = true;
+});
+
+/* ---------- shareable PR card ---------- */
+let lastPRForShare = null;
+function drawPRCard(pr){
+  const cv = document.createElement('canvas');
+  cv.width = 1080; cv.height = 1350;
+  const ctx = cv.getContext('2d');
+
+  ctx.fillStyle = '#101114';
+  ctx.fillRect(0, 0, cv.width, cv.height);
+  const grad = ctx.createRadialGradient(cv.width/2, 420, 80, cv.width/2, 420, 720);
+  grad.addColorStop(0, 'rgba(255,90,31,.22)');
+  grad.addColorStop(1, 'rgba(255,90,31,0)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, cv.width, cv.height);
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#ff5a1f';
+  ctx.font = '700 44px Arial';
+  ctx.fillText('L A M B E L L', cv.width/2, 130);
+
+  ctx.fillStyle = '#eeece4';
+  ctx.font = '900 78px Arial';
+  ctx.fillText('NEW PR', cv.width/2, 420);
+  ctx.fillStyle = '#ff5a1f';
+  ctx.font = '900 64px Arial';
+  ctx.fillText('\ud83c\udfc6', cv.width/2, 320);
+
+  ctx.fillStyle = '#d6d4cc';
+  ctx.font = '600 46px Arial';
+  wrapText(ctx, pr.name, cv.width/2, 560, 940, 54);
+
+  ctx.fillStyle = '#ff5a1f';
+  ctx.font = '900 130px Arial';
+  ctx.fillText(pr.top + ' kg', cv.width/2, 760);
+
+  ctx.fillStyle = '#4c9f5c';
+  ctx.font = '700 48px Arial';
+  ctx.fillText('+' + pr.pct.toFixed(1) + '%', cv.width/2, 840);
+
+  const who = profile.name ? profile.name : 'Lambell';
+  const when = new Date().toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'});
+  ctx.fillStyle = '#8b8f97';
+  ctx.font = '500 36px Arial';
+  ctx.fillText(who + ' \u00b7 ' + when, cv.width/2, cv.height - 90);
+
+  return cv;
+}
+function wrapText(ctx, text, x, y, maxWidth, lineHeight){
+  const words = text.split(' ');
+  let line = '', lines = [];
+  words.forEach(w=>{
+    const test = line ? line + ' ' + w : w;
+    if(ctx.measureText(test).width > maxWidth && line){ lines.push(line); line = w; }
+    else line = test;
+  });
+  if(line) lines.push(line);
+  const startY = y - (lines.length - 1) * lineHeight / 2;
+  lines.forEach((l, i)=> ctx.fillText(l, x, startY + i * lineHeight));
+}
+$('finShare').addEventListener('click', async ()=>{
+  if(!lastPRForShare) return;
+  const btn = $('finShare');
+  btn.disabled = true; btn.textContent = 'Preparing\u2026';
+  try{
+    const cv = drawPRCard(lastPRForShare);
+    const blob = await new Promise(res=> cv.toBlob(res, 'image/png'));
+    const file = new File([blob], 'lambell-pr.png', {type:'image/png'});
+    const text = `New PR on ${lastPRForShare.name}: ${lastPRForShare.top} kg (+${lastPRForShare.pct.toFixed(1)}%) \ud83c\udfc6`;
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file], title:'New PR!', text});
+    } else {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'lambell-pr.png';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=> URL.revokeObjectURL(a.href), 5000);
+      toast('Image saved \u2014 share it from your gallery');
+    }
+  }catch(err){
+    if(!(err && err.name === 'AbortError')) toast('Couldn\u2019t create the share image');
+  }
+  btn.disabled = false; btn.textContent = '\ud83d\udce4 Share PR';
 });
 
 /* confetti */
