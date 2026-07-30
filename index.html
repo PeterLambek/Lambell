@@ -518,6 +518,9 @@ nav.tabs button.on{color:var(--accent)}
   </div>
   <div style="display:flex;align-items:center;gap:12px">
     <div class="db-count" id="dbCount"></div>
+    <button class="avatar-btn" id="settingsBtn" aria-label="Settings">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
     <button class="avatar-btn" id="avatarBtn" aria-label="Profile">
       <img id="avatarImg" alt="" hidden>
       <svg id="avatarFb" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>
@@ -864,6 +867,59 @@ nav.tabs button.on{color:var(--accent)}
   </div>
 </div>
 
+<!-- SETTINGS -->
+<div class="sheet" id="settingsSheet" role="dialog" aria-modal="true">
+  <div class="form-sheet">
+    <div class="sheet-top">
+      <button class="icon-btn" id="setBack" aria-label="Back">←</button>
+      <div class="spacer"></div>
+    </div>
+    <div class="detail-body" style="padding-top:0;padding-bottom:0">
+      <h2 class="anton">Settings</h2>
+    </div>
+
+    <div class="sec-label" style="margin-top:14px">Finish-screen celebration</div>
+    <div class="hint">Turn this off to just see the Lambell logo when you finish — no video.</div>
+    <button class="toggle-row" id="setCelebAnim"><span>Show celebration video</span><span class="switch"></span></button>
+    <button class="toggle-row" id="setCelebSound"><span>Celebration sound</span><span class="switch"></span></button>
+    <button class="toggle-row" id="setConfetti"><span>Confetti burst</span><span class="switch"></span></button>
+
+    <div class="sec-label">Rest timer</div>
+    <button class="toggle-row" id="setRestSound"><span>Rest timer sound</span><span class="switch"></span></button>
+    <button class="toggle-row" id="setRestVibrate"><span>Rest timer vibration</span><span class="switch"></span></button>
+    <div class="field">
+      <label>Default rest for new exercises</label>
+      <div class="stepper">
+        <button id="restDefMinus" aria-label="Less rest">−</button>
+        <span class="val" id="restDefVal">45s</span>
+        <button id="restDefPlus" aria-label="More rest">+</button>
+      </div>
+    </div>
+
+    <div class="sec-label">Library</div>
+    <button class="bs-link" id="setReloadLib">
+      🔄 Re-download exercise library
+      <span class="chev">›</span>
+    </button>
+
+    <div class="sec-label">Feedback</div>
+    <div class="hint">Found a bug or have an idea? Send it straight over.</div>
+    <div class="field">
+      <textarea id="feedbackText" placeholder="Type your feedback here…" style="width:100%;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 13px;min-height:90px;outline:none;resize:vertical"></textarea>
+    </div>
+    <div class="addline"><button class="btn ghost" id="feedbackSend" style="width:100%">Send feedback</button></div>
+
+    <div class="sec-label">About</div>
+    <div style="margin:0 16px 24px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;text-align:center">
+      <div class="logo" style="justify-content:center;margin-bottom:8px">
+        <span class="plate"></span><span class="bar"></span><h1 class="anton" style="font-size:22px">Lambell</h1><span class="bar"></span><span class="plate"></span>
+      </div>
+      <div class="hint" style="margin:0">A personal training tracker, built by Peter Lambek.</div>
+      <div class="hint" style="margin:8px 0 0;color:var(--muted)">Exercise data: free-exercise-db (public domain). No accounts, no cloud — your data stays on this phone.</div>
+    </div>
+  </div>
+</div>
+
 <!-- UNIT CONVERTER -->
 <div class="modal-bg" id="convBg">
   <div class="modal" style="max-width:340px">
@@ -947,6 +1003,7 @@ nav.tabs button.on{color:var(--accent)}
 <div class="finish-bg" id="finishBg">
   <div class="finish-card">
     <video id="hiveVideo" playsinline autoplay hidden></video>
+    <img id="finLogo" src="hero.png" alt="Lambell" style="width:140px;margin:0 auto 14px;display:block" hidden>
     <div class="anton fin-title" id="finTitle">Workout done!</div>
     <div class="fin-sub" id="finSub"></div>
     <div id="finPRs"></div>
@@ -1056,6 +1113,10 @@ function imgUrl(path, baseIdx=0){ return IMG_BASES[baseIdx] + path; }
   profile = load(LS_PROFILE) || {entries: []};
   if(!Array.isArray(profile.entries)) profile.entries = [];
   if(!Array.isArray(profile.customFields)) profile.customFields = [];
+  if(!profile.settings || typeof profile.settings !== 'object') profile.settings = {};
+  const SETTINGS_DEFAULTS = {celebAnim:true, celebSound:true, restSound:true, restVibrate:true, confetti:true};
+  Object.keys(SETTINGS_DEFAULTS).forEach(k=>{ if(typeof profile.settings[k] !== 'boolean') profile.settings[k] = SETTINGS_DEFAULTS[k]; });
+  if(typeof profile.settings.defaultRest !== 'number' || profile.settings.defaultRest < 0) profile.settings.defaultRest = 45;
   profile.entries.forEach(e=>{
     if(!e.ts) e.ts = (e.d || todayKey()) + 'T12:00:00';
     if(!e.id) e.id = 'e_' + e.ts + '_' + Math.random().toString(36).slice(2,7);
@@ -1282,7 +1343,7 @@ function closeDetail(){
 $('dAddBtn').addEventListener('click', ()=>{
   if(!detailEx || !editing) return;
   const w = editing.workouts.find(x=> x.id === pickTarget); if(!w) return;
-  w.exercises.push({exId: detailEx.id, name: detailEx.name, sets: 3, reps: 12, kg: '', rest: 45});
+  w.exercises.push({exId: detailEx.id, name: detailEx.name, sets: 3, reps: 12, kg: '', rest: profile.settings.defaultRest});
   renderWorkouts();
   renderPick();
   toast(`${detailEx.name} added`);
@@ -1617,7 +1678,7 @@ $('pickList').addEventListener('click', e=>{
 
   const r = e.target.closest('.pick-row'); if(!r) return;
   const ex = custom.concat(db).find(x=> String(x.id) === r.dataset.id); if(!ex) return;
-  w.exercises.push({exId: ex.id, name: ex.name, sets: 3, reps: 12, kg: '', rest: 45});
+  w.exercises.push({exId: ex.id, name: ex.name, sets: 3, reps: 12, kg: '', rest: profile.settings.defaultRest});
   renderWorkouts();
   renderPick();
   toast(`${ex.name} added`);
@@ -2327,39 +2388,47 @@ function showFinish(d){
   $('finShare').hidden = !lastPRForShare;
   $('finNote').textContent = d.note ? `\u201c${d.note}\u201d` : '';
 
-  /* optional high-five video: random pick among the variants that exist in the repo */
+  /* optional high-five video: random pick among the variants that exist in the repo.
+     If celebration videos are turned off in Settings, just show the Lambell logo instead. */
   const v = $('hiveVideo');
   v.hidden = true;
-  v.onerror = ()=>{ v.hidden = true; };
-  v.oncanplay = ()=>{
-    v.hidden = false;
-    v.muted = false; v.volume = 1;
-    v.play().catch(()=>{ v.muted = true; v.play().catch(()=>{}); });
-  };
-  $('finClose').textContent = pickFinishLine(false, d.partial);   /* fallback while video loads / if none exist */
+  $('finLogo').hidden = true;
 
-  function playNormalCelebration(){
-    discoverHive().then(list=>{
-      if(list.length){
-        const chosen = list[(Math.random() * list.length) | 0];
-        v.src = chosen;
-        $('finClose').textContent = pickFinishLine(chosen.startsWith('thumbsup-animal'), d.partial);
-      }
-    });
-  }
-
-  if(d.prs.length){
-    /* significant PR this session: prefer the special Viking celebration if available */
-    discoverPR().then(prs=>{
-      if(prs.length) v.src = prs[(Math.random() * prs.length) | 0];
-      else playNormalCelebration();
-    });
+  if(!profile.settings.celebAnim){
+    $('finLogo').hidden = false;
+    $('finClose').textContent = pickFinishLine(false, d.partial);
   } else {
-    playNormalCelebration();
+    v.onerror = ()=>{ v.hidden = true; };
+    v.oncanplay = ()=>{
+      v.hidden = false;
+      v.muted = !profile.settings.celebSound; v.volume = 1;
+      v.play().catch(()=>{ v.muted = true; v.play().catch(()=>{}); });
+    };
+    $('finClose').textContent = pickFinishLine(false, d.partial);   /* fallback while video loads / if none exist */
+
+    function playNormalCelebration(){
+      discoverHive().then(list=>{
+        if(list.length){
+          const chosen = list[(Math.random() * list.length) | 0];
+          v.src = chosen;
+          $('finClose').textContent = pickFinishLine(chosen.startsWith('thumbsup-animal'), d.partial);
+        }
+      });
+    }
+
+    if(d.prs.length){
+      /* significant PR this session: prefer the special Viking celebration if available */
+      discoverPR().then(prs=>{
+        if(prs.length) v.src = prs[(Math.random() * prs.length) | 0];
+        else playNormalCelebration();
+      });
+    } else {
+      playNormalCelebration();
+    }
   }
 
   $('finishBg').classList.add('open');
-  if(!matchMedia('(prefers-reduced-motion: reduce)').matches && !d.partial) confettiBurst();
+  if(!matchMedia('(prefers-reduced-motion: reduce)').matches && !d.partial && profile.settings.confetti) confettiBurst();
   if(navigator.vibrate) navigator.vibrate(d.partial ? [90,60,90] : (d.prs.length ? [120,80,120,80,240] : [120,80,120]));
 }
 $('finClose').addEventListener('click', ()=>{
@@ -3084,7 +3153,71 @@ function svgChart(pts, unit){
   </svg>`;
 }
 
-/* ---------- quick unit converter (one-off, doesn't touch stored data) ---------- */
+/* ---------- settings ---------- */
+function openSettings(){
+  $('settingsSheet').classList.add('open', 'above');
+  $('settingsSheet').scrollTop = 0;
+  renderSettings();
+}
+function closeSettings(){ $('settingsSheet').classList.remove('open'); }
+$('settingsBtn').addEventListener('click', openSettings);
+$('setBack').addEventListener('click', closeSettings);
+
+function renderSettings(){
+  [['setCelebAnim','celebAnim'],['setCelebSound','celebSound'],['setConfetti','confetti'],['setRestSound','restSound'],['setRestVibrate','restVibrate']]
+    .forEach(([id, key])=> $(id).querySelector('.switch').classList.toggle('on', !!profile.settings[key]));
+  $('restDefVal').textContent = profile.settings.defaultRest + 's';
+}
+[['setCelebAnim','celebAnim'],['setCelebSound','celebSound'],['setConfetti','confetti'],['setRestSound','restSound'],['setRestVibrate','restVibrate']]
+  .forEach(([id, key])=>{
+    $(id).addEventListener('click', ()=>{
+      profile.settings[key] = !profile.settings[key];
+      save(LS_PROFILE, profile);
+      renderSettings();
+    });
+  });
+$('restDefMinus').addEventListener('click', ()=>{
+  profile.settings.defaultRest = Math.max(0, profile.settings.defaultRest - 5);
+  save(LS_PROFILE, profile);
+  renderSettings();
+});
+$('restDefPlus').addEventListener('click', ()=>{
+  profile.settings.defaultRest = Math.min(600, profile.settings.defaultRest + 5);
+  save(LS_PROFILE, profile);
+  renderSettings();
+});
+$('setReloadLib').addEventListener('click', ()=>{
+  localStorage.removeItem(LS_DB);
+  fullLoaded = false;
+  $('dlHero').hidden = false;
+  $('dlBtn').disabled = false; $('dlBtn').textContent = 'Load full library';
+  closeSettings();
+  gotoTab('library');
+  window.scrollTo({top:0});
+  toast('Tap \u201cLoad full library\u201d to re-download');
+});
+
+$('feedbackSend').addEventListener('click', async ()=>{
+  const txt = $('feedbackText').value.trim();
+  if(!txt){ toast('Write something first'); return; }
+  const msg = `Lambell feedback${profile.name ? ' from ' + profile.name : ''}:\n\n${txt}`;
+  try{
+    if(navigator.share){
+      await navigator.share({text: msg});
+      $('feedbackText').value = '';
+      toast('Thanks for the feedback!');
+      return;
+    }
+  }catch(err){
+    if(err && err.name === 'AbortError') return;
+  }
+  try{
+    await navigator.clipboard.writeText(msg);
+    toast('Copied \u2014 paste it wherever you\u2019d like to send it');
+  }catch(err){
+    toast('Couldn\u2019t share \u2014 copy the text manually');
+  }
+});
 let convMode = 'weight';
 const CONV = {
   weight: {l1:'kg', l2:'lb', toB: v=> v * 2.2046226218, toA: v=> v / 2.2046226218},
@@ -3177,6 +3310,7 @@ $('impDataFile').addEventListener('change', e=>{
 let restEndT = 0, restIv = null, restLastSec = null, restHalf = 0, audioCtx = null;
 
 function beep(freq, dur, vol){
+  if(!profile.settings.restSound) return;
   try{
     audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
     if(audioCtx.state === 'suspended') audioCtx.resume();
@@ -3190,6 +3324,7 @@ function beep(freq, dur, vol){
   }catch(e){}
 }
 function speak(txt){
+  if(!profile.settings.restSound) return;
   try{
     if(!('speechSynthesis' in window)){ beep(770, .12, .18); return; }
     const u = new SpeechSynthesisUtterance(txt);
@@ -3220,7 +3355,7 @@ function tickRest(){
     $('restBar').classList.add('go');
     beep(880, .18, .22);
     setTimeout(()=> beep(1245, .35, .22), 180);
-    if(navigator.vibrate) navigator.vibrate([300,120,300]);
+    if(profile.settings.restVibrate && navigator.vibrate) navigator.vibrate([300,120,300]);
     setTimeout(()=>{ if(!restIv) $('restBar').hidden = true; }, 2500);
     return;
   }
@@ -3228,10 +3363,10 @@ function tickRest(){
     restLastSec = r;
     if(restHalf && r === restHalf){          /* halfway: voice + vibration */
       speak('Halfway there');
-      if(navigator.vibrate) navigator.vibrate([80,60,80]);
+      if(profile.settings.restVibrate && navigator.vibrate) navigator.vibrate([80,60,80]);
     } else if(r <= 5){                       /* 5-4-3-2-1 warning ticks */
       beep(660, .09, .16);
-      if(navigator.vibrate) navigator.vibrate(60);
+      if(profile.settings.restVibrate && navigator.vibrate) navigator.vibrate(60);
     }
   }
   $('restTime').textContent = Math.floor(r/60) + ':' + String(r%60).padStart(2,'0');
@@ -3301,6 +3436,7 @@ document.addEventListener('keydown', e=>{
   if(e.key==='Escape'){
     if($('photoBg').classList.contains('open')){ $('photoBg').classList.remove('open'); return; }
     if($('convBg').classList.contains('open')){ $('convBg').classList.remove('open'); return; }
+    if($('settingsSheet').classList.contains('open')){ closeSettings(); return; }
     if($('bodyStatsSheet').classList.contains('open')){ closeBodyStats(); return; }
     if($('profSheet').classList.contains('open')){ closeProfile(); return; }
     if($('focusSheet').classList.contains('open')){ closeFocus(); return; }
