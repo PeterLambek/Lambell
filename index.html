@@ -560,6 +560,11 @@ nav.tabs button.on{color:var(--accent)}
     </div>
 
     <div class="toolbar">
+      <div class="gender-seg" id="sourceSeg" style="margin:0 0 10px">
+        <button data-src="" class="on">All</button>
+        <button data-src="created">Created</button>
+        <button data-src="received">Received</button>
+      </div>
       <div class="search">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
         <input id="q" type="search" placeholder="Search exercises…" autocomplete="off">
@@ -594,7 +599,8 @@ nav.tabs button.on{color:var(--accent)}
 
     <div class="footer-credit">
       Exercise data: free-exercise-db (public domain) ·
-      <button id="reloadDb">re-download library</button>
+      <button id="reloadDb">re-download library</button> ·
+      <button id="libImport">import shared code</button>
     </div>
   </section>
 
@@ -669,6 +675,7 @@ nav.tabs button.on{color:var(--accent)}
     <div class="sec"><h3 class="anton">Muscles</h3><div class="muscle-tags" id="dMuscles"></div></div>
     <div class="sec" id="dStepsSec"><h3 class="anton">How to</h3><ol class="steps" id="dSteps"></ol></div>
     <button class="btn" id="dAddBtn" hidden style="width:100%;margin-bottom:10px">Add to workout</button>
+    <button class="btn ghost" id="dShare" hidden style="width:100%;margin-bottom:10px">📤 Share this exercise</button>
     <button class="danger" id="dDelete" hidden>Delete custom exercise</button>
   </div>
 </div>
@@ -702,6 +709,18 @@ nav.tabs button.on{color:var(--accent)}
         <option value="intermediate" selected>Intermediate</option>
         <option value="expert">Expert</option>
       </select>
+    </div>
+    <div class="field">
+      <label>Photo <span style="text-transform:none;font-weight:400">(optional)</span></label>
+      <div id="cPhotoPreviewWrap" style="display:flex;align-items:center;gap:10px">
+        <div id="cPhotoPreviewBox" style="width:64px;height:64px;border-radius:10px;background:var(--card);border:1px solid var(--line);overflow:hidden;display:flex;align-items:center;justify-content:center;flex:none">
+          <img id="cPhotoPreview" alt="" hidden style="width:100%;height:100%;object-fit:cover">
+          <svg id="cPhotoIcon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted)"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3.5"/></svg>
+        </div>
+        <button class="btn ghost" id="cPhotoBtn" style="width:auto;padding:9px 16px">Add photo</button>
+        <button class="btn ghost" id="cPhotoRemove" style="width:auto;padding:9px 12px" hidden>Remove</button>
+      </div>
+      <input type="file" id="cPhotoFile" accept="image/*" hidden>
     </div>
     <div class="field">
       <label for="cSteps">Instructions <span style="text-transform:none;font-weight:400">(optional)</span></label>
@@ -763,9 +782,9 @@ nav.tabs button.on{color:var(--accent)}
       <div class="spacer"></div>
     </div>
     <div class="detail-body" style="padding-top:0;padding-bottom:0">
-      <h2 class="anton">Import program</h2>
+      <h2 class="anton">Import shared code</h2>
     </div>
-    <div class="hint" style="margin-top:10px">Paste a share code from a gym buddy — it starts with <b>LMB1:</b></div>
+    <div class="hint" style="margin-top:10px">Paste a code from a gym buddy — a program starts with <b>LMB1:</b>, an exercise starts with <b>LEX1:</b></div>
     <div class="field">
       <textarea id="impText" placeholder="Paste the share code here…" style="width:100%;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 13px;min-height:130px;outline:none;resize:vertical"></textarea>
     </div>
@@ -787,6 +806,7 @@ nav.tabs button.on{color:var(--accent)}
       <button class="btn" id="pickDone" style="width:auto;padding:10px 18px">Done</button>
     </div>
     <div class="hint">Tap an exercise to add it — as many times as you like.<br><span style="color:var(--text)">★</span> in this workout · <span style="color:#f5c518">★</span> used in another workout</div>
+    <div style="margin:0 16px 10px"><button class="btn ghost" id="pickCreateNew" style="width:100%">🆕 Can't find it? Create it here</button></div>
     <div class="list" id="pickList"></div>
   </div>
 </div>
@@ -917,6 +937,10 @@ nav.tabs button.on{color:var(--accent)}
       <div class="hint" style="margin:0">A personal training tracker, built by Peter Lambek.</div>
       <div class="hint" style="margin:8px 0 0;color:var(--muted)">Exercise data: free-exercise-db (public domain). No accounts, no cloud — your data stays on this phone.</div>
     </div>
+
+    <div class="sec-label" style="color:#d33a3a">Danger zone</div>
+    <div class="hint">Deletes everything — programs, training log, body stats, photos, and your profile. The exercise library stays cached so you don't have to re-download it. This cannot be undone.</div>
+    <div style="margin:0 16px 24px"><button class="danger" id="resetAppBtn" style="width:100%">🗑 Reset app & start fresh</button></div>
   </div>
 </div>
 
@@ -1078,7 +1102,7 @@ const STARTER = [
 let db = [];            // full library (or starter pack)
 let custom = [];        // user-created exercises
 let fullLoaded = false;
-let filters = { q:'', muscle:'', equip:'', level:'' };
+let filters = { q:'', muscle:'', equip:'', level:'', src:'' };
 let renderLimit = 60;
 let filtered = [];
 let detailEx = null;
@@ -1190,6 +1214,12 @@ $('reloadDb').addEventListener('click', ()=>{
 
 /* ---------- filter UI ---------- */
 function buildFilterUI(){
+  $('sourceSeg').addEventListener('click', e=>{
+    const b = e.target.closest('button[data-src]'); if(!b) return;
+    filters.src = b.dataset.src;
+    $('sourceSeg').querySelectorAll('button').forEach(x=> x.classList.toggle('on', x === b));
+    applyFilters();
+  });
   const chipsWrap = $('muscleChips');
   chipsWrap.innerHTML = '';
   const all = document.createElement('button');
@@ -1233,9 +1263,14 @@ function buildFilterUI(){
 
 /* ---------- filtering & rendering ---------- */
 function applyFilters(){
-  const {q, muscle, equip, level} = filters;
+  const {q, muscle, equip, level, src} = filters;
   const pool = custom.concat(db);
   filtered = pool.filter(x=>{
+    if(src){
+      if(!String(x.id).startsWith('cx_')) return false;
+      if(src === 'created' && x.source === 'received') return false;
+      if(src === 'received' && x.source !== 'received') return false;
+    }
     if(level && x.level !== level) return false;
     if(equip && (x.equipment||'') !== equip) return false;
     if(muscle){
@@ -1261,20 +1296,26 @@ function renderList(){
   $('emptyState').hidden = filtered.length > 0;
 
   wrap.innerHTML = slice.map(x=>{
+    const isCustom = String(x.id).startsWith('cx_');
     const img = (x.images && x.images.length)
       ? `<img loading="lazy" src="${esc(imgUrl(x.images[0]))}" alt="" onerror="this.onerror=null;this.src='${esc(imgUrl('',1))}${esc(x.images[0])}'">`
-      : `<span class="mono"><i></i><i class="b"></i><i></i></span>`;
-    const isCustom = String(x.id).startsWith('cx_');
+      : (isCustom && x.hasImage)
+        ? `<img loading="lazy" data-custex="${esc(x.id)}" alt="">`
+        : `<span class="mono"><i></i><i class="b"></i><i></i></span>`;
     return `<button class="ex-card" data-id="${esc(x.id)}">
       <span class="thumb">${img}</span>
       <span class="info">
         <span class="name">${esc(x.name)}</span>
         <span class="meta">${esc((x.primaryMuscles||[]).join(', '))}${x.equipment? ' · '+esc(x.equipment):''}</span>
       </span>
-      ${isCustom ? '<span class="custom-flag">Custom</span>' : ''}
+      ${isCustom ? `<span class="custom-flag">${x.source==='received' ? 'Received' : 'Custom'}</span>` : ''}
       <span class="lvl ${esc(x.level||'')}" title="${esc(x.level||'')}"></span>
     </button>`;
   }).join('');
+
+  wrap.querySelectorAll('img[data-custex]').forEach(img=>{
+    idbGet('custex-' + img.dataset.custex).then(rec=>{ if(rec) img.src = rec.data; }).catch(()=>{});
+  });
 }
 
 $('exList').addEventListener('click', e=>{
@@ -1314,11 +1355,20 @@ function openDetail(ex, fromPicker){
   $('dStepsSec').style.display = steps.length ? '' : 'none';
   $('dSteps').innerHTML = steps.map(s=>`<li>${esc(s)}</li>`).join('');
 
-  const hasImg = ex.images && ex.images.length;
-  $('detailImgWrap').style.display = hasImg ? '' : 'none';
-  if(hasImg) setDetailImg();
+  const hasLibImg = ex.images && ex.images.length;
+  const hasCustomImg = !!ex.hasImage;
+  $('detailImgWrap').style.display = (hasLibImg || hasCustomImg) ? '' : 'none';
+  $('imgDots').style.display = hasLibImg ? '' : 'none';
+  if(hasLibImg){
+    setDetailImg();
+  } else if(hasCustomImg){
+    $('detailImg').removeAttribute('src');
+    idbGet('custex-' + ex.id).then(rec=>{ if(rec && detailEx && detailEx.id === ex.id) $('detailImg').src = rec.data; }).catch(()=>{});
+  }
 
-  $('dDelete').hidden = !String(ex.id).startsWith('cx_');
+  const isCustom = String(ex.id).startsWith('cx_');
+  $('dDelete').hidden = !isCustom;
+  $('dShare').hidden = !isCustom;
   $('detailSheet').classList.add('open');
   $('detailSheet').scrollTop = 0;
   document.body.style.overflow = 'hidden';
@@ -1359,20 +1409,80 @@ $('dDelete').addEventListener('click', ()=>{
   applyFilters();
   toast('Exercise deleted');
 });
+$('dShare').addEventListener('click', async ()=>{
+  if(!detailEx) return;
+  try{
+    let img = null;
+    if(detailEx.hasImage){
+      try{ const rec = await idbGet('custex-' + detailEx.id); if(rec) img = rec.data; }catch(e){}
+    }
+    const payload = {
+      v:1, n: detailEx.name, m: (detailEx.primaryMuscles||[])[0] || '',
+      eq: detailEx.equipment || '', lv: detailEx.level || 'intermediate',
+      ins: detailEx.instructions || [], img
+    };
+    const code = 'LEX1:' + await packCode(JSON.stringify(payload));
+    const msg = `Lambell exercise \u201c${detailEx.name}\u201d \u2014 open Lambell \u2192 Library \u2192 import shared code, and paste this:\n\n${code}`;
+    if(navigator.share){
+      try{ await navigator.share({text: msg}); return; }
+      catch(err){ if(err && err.name === 'AbortError') return; }
+    }
+    await navigator.clipboard.writeText(msg);
+    toast('Share code copied \u2014 paste it to your gym buddy');
+  }catch(err){
+    toast('Couldn\u2019t create share code');
+  }
+});
 
 /* ---------- custom exercise form ---------- */
-$('fabAdd').addEventListener('click', ()=>{
-  if(currentTab === 'programs'){ newProgram(); return; }
+let formPickerTarget = null;
+let cPhotoData = null;
+
+function openForm(pickerTarget){
+  formPickerTarget = pickerTarget || null;
+  $('formSheet').classList.toggle('above', !!formPickerTarget);
   $('formSheet').classList.add('open');
   document.body.style.overflow = 'hidden';
   setTimeout(()=> $('cName').focus(), 250);
+}
+$('fabAdd').addEventListener('click', ()=>{
+  if(currentTab === 'programs'){ newProgram(); return; }
+  openForm(null);
 });
+$('pickCreateNew').addEventListener('click', ()=> openForm(pickTarget));
+function resetFormFields(){
+  $('cName').value=''; $('cSteps').value='';
+  cPhotoData = null;
+  $('cPhotoPreview').hidden = true; $('cPhotoPreview').removeAttribute('src');
+  $('cPhotoIcon').hidden = false;
+  $('cPhotoRemove').hidden = true;
+}
 function closeForm(){
   $('formSheet').classList.remove('open');
-  document.body.style.overflow = '';
+  $('formSheet').classList.remove('above');
+  formPickerTarget = null;
+  if(!$('pickSheet').classList.contains('open')) document.body.style.overflow = '';
 }
 $('formBack').addEventListener('click', closeForm);
-$('cSave').addEventListener('click', ()=>{
+$('cPhotoBtn').addEventListener('click', ()=> $('cPhotoFile').click());
+$('cPhotoFile').addEventListener('change', async e=>{
+  const f = e.target.files[0]; e.target.value = '';
+  if(!f) return;
+  try{
+    cPhotoData = await shrinkImage(f, 640, .8);
+    $('cPhotoPreview').src = cPhotoData;
+    $('cPhotoPreview').hidden = false;
+    $('cPhotoIcon').hidden = true;
+    $('cPhotoRemove').hidden = false;
+  }catch(err){ toast('Couldn\u2019t read that image'); }
+});
+$('cPhotoRemove').addEventListener('click', ()=>{
+  cPhotoData = null;
+  $('cPhotoPreview').hidden = true; $('cPhotoPreview').removeAttribute('src');
+  $('cPhotoIcon').hidden = false;
+  $('cPhotoRemove').hidden = true;
+});
+$('cSave').addEventListener('click', async ()=>{
   const name = $('cName').value.trim();
   if(!name){ toast('Give the exercise a name'); $('cName').focus(); return; }
   const ex = {
@@ -1385,15 +1495,30 @@ $('cSave').addEventListener('click', ()=>{
     primaryMuscles: [$('cMuscle').value],
     secondaryMuscles: [],
     instructions: $('cSteps').value.split('\n').map(s=>s.trim()).filter(Boolean),
-    images: []
+    images: [],
+    source: 'created'
   };
+  if(cPhotoData){
+    try{ await idbPut({id:'custex-'+ex.id, dkey: todayKey(), data: cPhotoData}); ex.hasImage = true; }catch(e){}
+  }
   custom.unshift(ex);
   save(LS_CUSTOM, custom);
-  $('cName').value=''; $('cSteps').value='';
+
+  const pickerTarget = formPickerTarget;
+  resetFormFields();
   closeForm();
   updateCount();
   applyFilters();
-  toast(`“${name}” added`);
+
+  if(pickerTarget && editing){
+    const w = editing.workouts.find(x=> x.id === pickerTarget);
+    if(w){
+      w.exercises.push({exId: ex.id, name: ex.name, sets: 3, reps: 12, kg: '', rest: profile.settings.defaultRest});
+      renderWorkouts();
+      renderPick();
+    }
+  }
+  toast(`\u201c${name}\u201d added`);
 });
 
 /* ============================================================
@@ -1775,7 +1900,80 @@ const TEMPLATES = [
       {n:'Run (min)', ex:[['Run — easy pace (min)',1,45,0]]},
       {n:'Bike (min)', ex:[['Bike — steady effort (min)',1,60,0]]},
       {n:'Long Ride + Brick (min)', ex:[['Bike — long ride (min)',1,150,0],['Brick run off the bike (min)',1,20,0]]},
-      {n:'Long Run (min)', ex:[['Run — long slow (min)',1,75,0]]}]}
+      {n:'Long Run (min)', ex:[['Run — long slow (min)',1,75,0]]}]},
+  { n:'Dumbbells Only — Beginner', weeks:6, sched:[0,-1,0,-1,0,-1,-1],
+    workouts:[{n:'Full Body (Dumbbells)', ex:[
+      ['Dumbbell Goblet Squat',3,12,60],['Dumbbell Bench Press',3,12,60],
+      ['Dumbbell Row',3,12,60],['Dumbbell Shoulder Press',3,12,60],
+      ['Dumbbell Bicep Curl',3,15,45],['Dumbbell Lateral Raise',3,15,45]]}]},
+  { n:'Dumbbells Only — Advanced', weeks:8, sched:[0,1,-1,0,1,-1,-1],
+    workouts:[
+      {n:'Upper (Dumbbells)', ex:[
+        ['Dumbbell Bench Press',4,8,90],['Dumbbell Row',4,8,90],['Dumbbell Shoulder Press',4,10,75],
+        ['Dumbbell Incline Press',3,10,75],['Dumbbell Hammer Curl',3,12,60],
+        ['Dumbbell Skull Crusher',3,12,60],['Dumbbell Lateral Raise',3,15,45]]},
+      {n:'Lower (Dumbbells)', ex:[
+        ['Dumbbell Goblet Squat',4,10,90],['Dumbbell Romanian Deadlift',4,10,90],
+        ['Dumbbell Bulgarian Split Squat',3,10,75],['Dumbbell Step-up',3,12,60],
+        ['Dumbbell Walking Lunge',3,12,60],['Standing Calf Raise',3,15,45]]}]},
+  { n:'Kettlebell Only — Beginner', weeks:6, sched:[0,-1,0,-1,0,-1,-1],
+    workouts:[{n:'Full Body (Kettlebell)', ex:[
+      ['Kettlebell Goblet Squat',3,12,60],['Kettlebell Deadlift',3,12,60],
+      ['Kettlebell Row',3,12,60],['Kettlebell Press',3,10,60],
+      ['Kettlebell Swing',3,15,45],['Kettlebell Halo',2,10,45]]}]},
+  { n:'Kettlebell Only — Advanced', weeks:8, sched:[0,1,-1,0,1,-1,-1],
+    workouts:[
+      {n:'Kettlebell Strength', ex:[
+        ['Kettlebell Clean',4,6,90],['Kettlebell Press',4,8,90],['Kettlebell Front Squat',4,8,90],
+        ['Kettlebell Romanian Deadlift',3,10,75],['Kettlebell Row',3,10,75]]},
+      {n:'Kettlebell Conditioning', ex:[
+        ['Kettlebell Swing',5,20,45],['Kettlebell Snatch',4,10,60],
+        ['Kettlebell Turkish Get-up',3,5,60],['Kettlebell Goblet Squat',3,15,45],
+        ['Kettlebell Around The World',2,10,30]]}]},
+  { n:'Dumbbell + Kettlebell — Beginner', weeks:6, sched:[0,-1,0,-1,0,-1,-1],
+    workouts:[{n:'Full Body Mix', ex:[
+      ['Kettlebell Goblet Squat',3,12,60],['Dumbbell Row',3,12,60],
+      ['Kettlebell Swing',3,15,45],['Dumbbell Shoulder Press',3,10,60],
+      ['Dumbbell Bicep Curl',3,12,45],['Kettlebell Halo',2,10,45]]}]},
+  { n:'Dumbbell + Kettlebell — Advanced', weeks:8, sched:[0,1,-1,0,1,-1,-1],
+    workouts:[
+      {n:'Upper (Mix)', ex:[
+        ['Dumbbell Bench Press',4,8,90],['Kettlebell Row',4,8,90],['Kettlebell Press',4,8,90],
+        ['Dumbbell Lateral Raise',3,15,45],['Dumbbell Hammer Curl',3,12,60],['Kettlebell Halo',3,10,45]]},
+      {n:'Lower (Mix)', ex:[
+        ['Kettlebell Front Squat',4,8,90],['Dumbbell Romanian Deadlift',4,10,90],
+        ['Kettlebell Swing',4,15,45],['Dumbbell Bulgarian Split Squat',3,10,75],
+        ['Kettlebell Goblet Squat',3,12,60]]}]},
+  { n:'Calisthenics — Beginner', weeks:6, sched:[0,-1,0,-1,0,-1,-1],
+    workouts:[{n:'Full Body (Calisthenics)', ex:[
+      ['Push-Up',3,10,60],['Bodyweight Squat',3,15,60],['Pull-Up',3,5,90],
+      ['Plank — hold (sec)',3,30,45],['Glute Bridge',3,15,45],['Bodyweight Walking Lunge',3,12,45]]}]},
+  { n:'Calisthenics — Advanced', weeks:8, sched:[0,1,-1,0,1,-1,-1],
+    workouts:[
+      {n:'Upper (Calisthenics)', ex:[
+        ['Pull-Up',4,8,90],['Dips',4,10,90],['Pike Push-Up',3,10,60],
+        ['Archer Push-Up',3,8,75],['L-Sit — hold (sec)',3,20,60]]},
+      {n:'Lower (Calisthenics)', ex:[
+        ['Pistol Squat',4,6,90],['Bodyweight Walking Lunge',3,15,60],['Glute Bridge',3,15,45],
+        ['Standing Calf Raise',3,20,45],['Hollow Body Hold — hold (sec)',3,30,45]]}]},
+  { n:'Handstand Progression', weeks:8, sched:[0,-1,0,-1,0,-1,-1],
+    workouts:[{n:'Handstand Skill', ex:[
+      ['Wrist Stretch — hold (sec)',2,30,30],['Plank — hold (sec)',3,30,45],['Pike Push-Up',3,10,60],
+      ['Wall Handstand — hold (sec)',4,20,90],['Handstand Push-Up',3,5,90],
+      ['Hollow Body Hold — hold (sec)',3,30,45]]}]},
+  { n:'Muscle-Up Progression', weeks:10, sched:[0,-1,0,-1,0,-1,-1],
+    workouts:[{n:'Muscle-Up Path (start: basic pull-ups)', ex:[
+      ['Pull-Up',4,8,90],['Straight Bar Dip',4,8,90],['Explosive Pull-Up',3,5,90],
+      ['Hollow Body Hold — hold (sec)',3,30,45],['Muscle-Up',3,2,150]]}]},
+  { n:'Planche Progression', weeks:10, sched:[0,-1,0,-1,0,-1,-1],
+    workouts:[{n:'Planche Skill', ex:[
+      ['Plank — hold (sec)',3,30,45],['Pseudo Planche Push-Up',3,8,75],
+      ['Tuck Planche — hold (sec)',4,15,90],['L-Sit — hold (sec)',3,20,60],
+      ['Hollow Body Hold — hold (sec)',3,30,45]]}]},
+  { n:'Human Flag Progression', weeks:10, sched:[0,-1,0,-1,0,-1,-1],
+    workouts:[{n:'Human Flag Skill', ex:[
+      ['Side Plank — hold (sec)',3,25,45],['Hanging Leg Raise',3,10,60],['Pull-Up',3,8,75],
+      ['Windshield Wipers',3,10,60],['Human Flag — hold (sec)',4,10,90]]}]}
 ];
 
 /* find a library exercise by id, exact name, or fuzzy name match */
@@ -1870,10 +2068,43 @@ $('pgImport').addEventListener('click', ()=>{
 $('impBack').addEventListener('click', closeImport);
 $('impGo').addEventListener('click', async ()=>{
   const raw = $('impText').value.trim();
-  const m = raw.match(/LMB1:([A-Za-z0-9+/=]+)/);
-  if(!m){ toast('No valid Lambell code found'); return; }
+  const mProg = raw.match(/LMB1:([A-Za-z0-9+/=]+)/);
+  const mEx = raw.match(/LEX1:([A-Za-z0-9+/=]+)/);
+  if(!mProg && !mEx){ toast('No valid Lambell code found'); return; }
+
+  if(mEx){
+    try{
+      const data = JSON.parse(await unpackCode(mEx[1]));
+      const ex = {
+        id: 'cx_' + Date.now(),
+        name: String(data.n || 'Exercise').slice(0, 60),
+        level: data.lv || 'intermediate',
+        equipment: data.eq || '',
+        category: 'strength', mechanic: null, force: null,
+        primaryMuscles: data.m ? [data.m] : [],
+        secondaryMuscles: [],
+        instructions: Array.isArray(data.ins) ? data.ins : [],
+        images: [],
+        source: 'received'
+      };
+      if(data.img){
+        try{ await idbPut({id:'custex-'+ex.id, dkey: todayKey(), data: data.img}); ex.hasImage = true; }catch(e){}
+      }
+      custom.unshift(ex);
+      save(LS_CUSTOM, custom);
+      $('impText').value = '';
+      closeImport();
+      updateCount();
+      applyFilters();
+      toast(`\u201c${ex.name}\u201d received`);
+    }catch(err){
+      toast('Couldn\u2019t read that exercise code');
+    }
+    return;
+  }
+
   try{
-    const data = JSON.parse(await unpackCode(m[1]));
+    const data = JSON.parse(await unpackCode(mProg[1]));
     const now = Date.now();
     const ws = (data.workouts||[]).map((w,wi)=>({
       id:'w_'+now+'_'+wi, name:String(w.n||'Workout').slice(0,30),
@@ -1901,6 +2132,11 @@ $('impGo').addEventListener('click', async ()=>{
   }catch(err){
     toast('Couldn\u2019t read that code \u2014 make sure it\u2019s complete');
   }
+});
+$('libImport').addEventListener('click', ()=>{
+  $('impSheet').classList.add('open', 'above');
+  document.body.style.overflow='hidden';
+  setTimeout(()=> $('impText').focus(), 250);
 });
 /* ============================================================
    Stage 3 — Train
@@ -3153,7 +3389,18 @@ function svgChart(pts, unit){
   </svg>`;
 }
 
-/* ---------- settings ---------- */
+$('resetAppBtn').addEventListener('click', ()=>{
+  askConfirm('This deletes ALL your data \u2014 programs, training log, body stats, photos, custom exercises and your profile. This cannot be undone. Continue?', ()=>{
+    askConfirm('Really sure? There is no way back from this.', async ()=>{
+      [LS_CUSTOM, LS_PROG, LS_LOG, LS_DRAFT, LS_PROFILE].forEach(k=> localStorage.removeItem(k));
+      try{ await new Promise((res, rej)=>{
+        const r = indexedDB.deleteDatabase('lambell');
+        r.onsuccess = res; r.onerror = rej; r.onblocked = res;
+      }); }catch(e){}
+      location.reload();
+    });
+  });
+});
 function openSettings(){
   $('settingsSheet').classList.add('open', 'above');
   $('settingsSheet').scrollTop = 0;
