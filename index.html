@@ -944,6 +944,22 @@ nav.tabs button.on{color:var(--accent)}
   </div>
 </div>
 
+<!-- PHOTO CROPPER -->
+<div class="modal-bg" id="cropBg">
+  <div class="modal" style="max-width:360px">
+    <h3 class="anton" style="margin-bottom:12px">Adjust photo</h3>
+    <div class="hint" style="margin-top:-6px">Drag to move, use the slider to zoom.</div>
+    <div id="cropStage" style="position:relative;width:280px;height:280px;margin:10px auto;border-radius:14px;overflow:hidden;background:#000;touch-action:none">
+      <canvas id="cropCanvas" width="280" height="280" style="width:280px;height:280px;display:block;cursor:grab"></canvas>
+    </div>
+    <input type="range" id="cropZoom" min="100" max="300" value="100" style="width:100%;margin:6px 0 16px">
+    <div style="display:flex;gap:10px">
+      <button class="btn ghost" id="cropCancel" style="flex:1">Cancel</button>
+      <button class="btn" id="cropConfirm" style="flex:1">Use photo</button>
+    </div>
+  </div>
+</div>
+
 <!-- UNIT CONVERTER -->
 <div class="modal-bg" id="convBg">
   <div class="modal" style="max-width:340px">
@@ -3191,6 +3207,98 @@ $('measSave').addEventListener('click', ()=>{
 });
 
 /* avatar */
+/* ---------- photo cropper (used for the profile avatar) ---------- */
+const CROP_SIZE = 280;
+let cropImg = null, cropObjUrl = null, cropCallback = null;
+let cropZoomMul = 1, cropPanX = 0, cropPanY = 0, cropBaseScale = 1;
+let cropDragging = false, cropLastX = 0, cropLastY = 0;
+
+function openCropper(file, onConfirm){
+  cropObjUrl = URL.createObjectURL(file);
+  const im = new Image();
+  im.onload = ()=>{
+    cropImg = im;
+    cropBaseScale = CROP_SIZE / Math.min(im.naturalWidth, im.naturalHeight);
+    cropZoomMul = 1; cropPanX = 0; cropPanY = 0;
+    $('cropZoom').value = 100;
+    cropCallback = onConfirm;
+    renderCropPreview();
+    $('cropBg').classList.add('open');
+    pushOverlayState();
+  };
+  im.onerror = ()=>{ toast('Couldn\u2019t read that image'); URL.revokeObjectURL(cropObjUrl); };
+  im.src = cropObjUrl;
+}
+function cropClampPan(){
+  const drawScale = cropBaseScale * cropZoomMul;
+  const dispW = cropImg.naturalWidth * drawScale, dispH = cropImg.naturalHeight * drawScale;
+  const maxX = Math.max(0, (dispW - CROP_SIZE) / 2), maxY = Math.max(0, (dispH - CROP_SIZE) / 2);
+  cropPanX = Math.min(maxX, Math.max(-maxX, cropPanX));
+  cropPanY = Math.min(maxY, Math.max(-maxY, cropPanY));
+}
+function drawCropTo(ctx, size, withMask){
+  ctx.clearRect(0, 0, size, size);
+  const scaleFactor = size / CROP_SIZE;
+  ctx.save();
+  ctx.translate(size/2 + cropPanX * scaleFactor, size/2 + cropPanY * scaleFactor);
+  const drawScale = cropBaseScale * cropZoomMul * scaleFactor;
+  ctx.scale(drawScale, drawScale);
+  ctx.drawImage(cropImg, -cropImg.naturalWidth/2, -cropImg.naturalHeight/2);
+  ctx.restore();
+  if(withMask){
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,.55)';
+    ctx.beginPath();
+    ctx.rect(0, 0, size, size);
+    ctx.arc(size/2, size/2, size/2, 0, Math.PI*2, true);
+    ctx.fill('evenodd');
+    ctx.beginPath();
+    ctx.arc(size/2, size/2, size/2 - 1.5, 0, Math.PI*2);
+    ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineWidth = 2.5; ctx.stroke();
+    ctx.restore();
+  }
+}
+function renderCropPreview(){
+  if(!cropImg) return;
+  cropClampPan();
+  drawCropTo($('cropCanvas').getContext('2d'), CROP_SIZE, true);
+}
+$('cropCanvas').addEventListener('pointerdown', e=>{
+  cropDragging = true; cropLastX = e.clientX; cropLastY = e.clientY;
+  try{ e.target.setPointerCapture(e.pointerId); }catch(err){}
+  e.target.style.cursor = 'grabbing';
+});
+$('cropCanvas').addEventListener('pointermove', e=>{
+  if(!cropDragging) return;
+  cropPanX += e.clientX - cropLastX;
+  cropPanY += e.clientY - cropLastY;
+  cropLastX = e.clientX; cropLastY = e.clientY;
+  renderCropPreview();
+});
+function cropDragEnd(e){ cropDragging = false; if(e && e.target && e.target.style) e.target.style.cursor = 'grab'; }
+$('cropCanvas').addEventListener('pointerup', cropDragEnd);
+$('cropCanvas').addEventListener('pointercancel', cropDragEnd);
+$('cropZoom').addEventListener('input', e=>{
+  cropZoomMul = (+e.target.value) / 100;
+  renderCropPreview();
+});
+function closeCropper(){
+  $('cropBg').classList.remove('open');
+  if(cropObjUrl){ URL.revokeObjectURL(cropObjUrl); cropObjUrl = null; }
+  cropImg = null; cropCallback = null;
+}
+$('cropCancel').addEventListener('click', closeCropper);
+$('cropConfirm').addEventListener('click', ()=>{
+  if(!cropImg){ closeCropper(); return; }
+  const out = document.createElement('canvas');
+  out.width = 480; out.height = 480;
+  drawCropTo(out.getContext('2d'), 480, false);
+  const data = out.toDataURL('image/jpeg', .85);
+  const cb = cropCallback;
+  closeCropper();
+  if(cb) cb(data);
+});
+
 function applyAvatar(data){
   [['avatarImg','avatarFb'],['profAvatarImg','profAvatarFb']].forEach(([i, f])=>{
     $(i).src = data; $(i).hidden = false; $(f).hidden = true;
@@ -3203,15 +3311,16 @@ async function loadAvatar(){
   try{ const a = await idbGet('avatar'); if(a) applyAvatar(a.data); }catch(e){}
 }
 $('avatarChange').addEventListener('click', ()=> $('avatarFile').click());
-$('avatarFile').addEventListener('change', async e=>{
+$('avatarFile').addEventListener('change', e=>{
   const f = e.target.files[0]; e.target.value = '';
   if(!f) return;
-  try{
-    const data = await shrinkImage(f, 384, .82);
-    await idbPut({id:'avatar', dkey: todayKey(), data});
-    applyAvatar(data);
-    toast('Profile photo updated');
-  }catch(err){ toast('Couldn\u2019t read that image'); }
+  openCropper(f, async data=>{
+    try{
+      await idbPut({id:'avatar', dkey: todayKey(), data});
+      applyAvatar(data);
+      toast('Profile photo updated');
+    }catch(err){ toast('Couldn\u2019t save that image'); }
+  });
 });
 
 /* progress photos */
@@ -3700,6 +3809,7 @@ function closeTopOverlay(){
     return true;
   }
   if($('confirmBg').classList.contains('open')){ $('confirmBg').classList.remove('open'); confirmCb = null; return true; }
+  if($('cropBg').classList.contains('open')){ closeCropper(); return true; }
   if($('photoBg').classList.contains('open')){ $('photoBg').classList.remove('open'); pvId = null; return true; }
   if($('convBg').classList.contains('open')){ $('convBg').classList.remove('open'); return true; }
   if($('settingsSheet').classList.contains('open')){ closeSettings(); return true; }
