@@ -154,7 +154,7 @@ main{padding-bottom:calc(var(--nav-h) + 24px + env(safe-area-inset-bottom))}
   display:flex;align-items:center;justify-content:center;font-size:18px}
 .sheet-top .spacer{flex:1}
 .detail-img{margin:0 16px;border-radius:var(--radius);overflow:hidden;background:var(--card);
-  aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;position:relative}
+  aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0}
 .detail-img img{width:100%;height:100%;object-fit:cover}
 .detail-img .dots{position:absolute;bottom:10px;left:0;right:0;display:flex;justify-content:center;gap:6px}
 .detail-img .dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.35)}
@@ -216,7 +216,7 @@ ol.steps li::before{
 .exr{padding:10px 0;border-top:1px solid var(--line)}
 .exr .top{display:flex;align-items:center;gap:8px}
 .grab{flex:none;color:var(--muted);font-size:17px;line-height:1;padding:4px 6px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
-.exr .nm{flex:1;min-width:0;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.exr .nm{flex:1;min-width:0;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
 .exr .ctrl{display:flex;align-items:center;gap:6px;margin-top:7px;padding-left:30px;flex-wrap:wrap}
 .exr input{width:42px;background:var(--card-2);border:1px solid var(--line);border-radius:7px;padding:6px 2px;text-align:center;font-size:14px;outline:none}
 .exr input:focus{border-color:var(--accent)}
@@ -226,6 +226,11 @@ ol.steps li::before{
 .exr .sep{color:var(--muted);font-size:12px}
 .unit{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.03em}
 .exr.dragging{position:relative;z-index:2;background:var(--card-2);border-radius:10px;transition:none}
+.wk-bulk{display:flex;align-items:center;gap:6px;margin-bottom:10px;padding:8px;background:var(--card-2);border:1px solid var(--line);border-radius:8px;flex-wrap:wrap}
+.wk-bulk input{width:42px;background:var(--card);border:1px solid var(--line);border-radius:7px;padding:6px 2px;text-align:center;font-size:13px;outline:none}
+.wk-bulk input:focus{border-color:var(--accent)}
+.wk-bulk input.rest{width:48px}
+.wk-bulk .btn{margin-left:auto;padding:6px 12px;font-size:12.5px;width:auto}
 @media (prefers-reduced-motion:no-preference){ .exlist .exr{transition:transform .12s} }
 .addline{margin:0 16px 14px}
 .sched{display:flex;flex-direction:column;gap:8px;margin:0 16px 4px}
@@ -251,14 +256,13 @@ ol.steps li::before{
 
 /* ---------- home ---------- */
 .home{display:flex;flex-direction:column;align-items:center;text-align:center;padding:26px 24px 10px}
-.hero-img{width:190px;height:190px;object-fit:contain;margin-bottom:18px;filter:drop-shadow(0 10px 30px rgba(255,90,31,.28))}
+.hero-img{width:190px;height:190px;object-fit:contain;margin-bottom:18px;filter:drop-shadow(0 10px 30px rgba(255,90,31,.28));cursor:pointer;transition:opacity .15s ease}
 .home h2{font-size:34px;line-height:1.05;margin-bottom:10px}
 .home .intro{color:var(--muted);font-size:15px;max-width:320px;margin-bottom:22px}
 .home-steps{width:100%;max-width:360px;text-align:left;margin-bottom:22px}
 .home-steps .hs{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin-bottom:8px}
 .home-steps .hs b{font-family:'Anton',Impact,sans-serif;color:var(--accent);font-size:16px;padding-top:1px}
 .home-steps .hs span{font-size:14px;color:#d6d4cc}
-.home-steps .hs.dim{opacity:.55}
 .home-cta{display:flex;gap:10px;width:100%;max-width:360px}
 .home-cta .btn{flex:1}
 .home-stats{margin-top:18px;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
@@ -318,7 +322,6 @@ ol.steps li::before{
 .tt-btn{display:flex;width:100%;text-align:left;align-items:baseline;gap:8px;padding:0}
 .tt-btn .chev{color:var(--muted);font-size:17px;flex:none;transform:translateY(1px)}
 .icon-btn:disabled{opacity:.3}
-.focus-count{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--muted)}
 
 /* ---------- profile ---------- */
 .avatar-btn{width:40px;height:40px;border-radius:50%;border:2px solid var(--line);overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--card);flex:none;padding:0}
@@ -464,15 +467,6 @@ ol.steps li::before{
 .prof-top::after{content:'';position:absolute;inset:0;z-index:0;background:linear-gradient(180deg, rgba(16,17,20,.35) 0%, rgba(16,17,20,.75) 60%, var(--bg) 100%)}
 .prof-top > *:not(.prof-hero-bg){position:relative;z-index:1}
 
-/* ---------- coming soon ---------- */
-.soon{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
-.soon .plates{display:flex;align-items:center;gap:6px;margin-bottom:18px}
-.soon .plates i{width:16px;height:34px;border-radius:6px;background:var(--plate)}
-.soon .plates i.b{width:26px;height:7px;border-radius:3px}
-.soon h2{font-size:30px;margin-bottom:8px}
-.soon p{color:var(--muted);max-width:280px}
-.soon .stage{margin-top:14px;font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--accent)}
-
 /* ---------- bottom nav ---------- */
 nav.tabs{
   position:fixed;bottom:0;left:0;right:0;z-index:40;height:calc(var(--nav-h) + env(safe-area-inset-bottom));
@@ -533,7 +527,7 @@ nav.tabs button.on{color:var(--accent)}
   <section class="view active" id="view-home">
     <div class="home">
       <video class="home-video" id="bgLoop" autoplay muted loop playsinline hidden></video>
-      <img class="hero-img" src="hero.png" alt="Lambell — flexing figure logo">
+      <canvas class="hero-img" id="heroFlexCanvas"></canvas>
       <h2 class="anton" id="homeGreeting">Log it.<br>Lift more.</h2>
       <p class="intro">Lambell keeps your program and your numbers in one place — so next session you always know exactly what you lifted last time.</p>
       <div class="home-steps">
@@ -548,6 +542,7 @@ nav.tabs button.on{color:var(--accent)}
       <button class="btn ghost" id="homeProfileCta" style="width:auto;padding:9px 18px;margin-top:10px" hidden>👤 Create your profile</button>
       <div class="home-stats" id="homeStats"></div>
       <div id="homeWeekly"></div>
+      <button class="avatar-btn" id="coffeeNavBtn" aria-label="Buy me a coffee" style="font-size:17px;margin-top:22px">☕</button>
     </div>
   </section>
 
@@ -621,16 +616,6 @@ nav.tabs button.on{color:var(--accent)}
   <!-- PROGRESS -->
   <section class="view" id="view-progress">
     <div id="progressWrap"></div>
-  </section>
-
-  <!-- COMING SOON -->
-  <section class="view" id="view-soon">
-    <div class="soon">
-      <div class="plates"><i></i><i class="b"></i><i style="background:var(--accent)"></i><i class="b"></i><i></i></div>
-      <h2 class="anton" id="soonTitle">Coming soon</h2>
-      <p id="soonText"></p>
-      <div class="stage anton" id="soonStage"></div>
-    </div>
   </section>
 </main>
 
@@ -770,6 +755,7 @@ nav.tabs button.on{color:var(--accent)}
       <span>Active program</span><span class="switch"></span>
     </button>
     <div style="margin:0 16px 10px"><button class="btn ghost" id="pgShare" style="width:100%">Share program</button></div>
+    <div style="margin:0 16px 10px"><button class="btn ghost" id="pgExportFile" style="width:100%">📄 Export as file</button></div>
     <div style="margin:0 16px 8px"><button class="danger" id="pgDelete">Delete program</button></div>
   </div>
 </div>
@@ -921,6 +907,7 @@ nav.tabs button.on{color:var(--accent)}
       🔄 Re-download exercise library
       <span class="chev">›</span>
     </button>
+    <div class="hint" id="libLastUpdated" style="margin:6px 16px 0"></div>
 
     <div class="sec-label">Feedback</div>
     <div class="hint">Found a bug or have an idea? Send it straight over.</div>
@@ -929,17 +916,24 @@ nav.tabs button.on{color:var(--accent)}
     </div>
     <div class="addline"><button class="btn ghost" id="feedbackSend" style="width:100%">Send feedback</button></div>
 
-    <div class="sec-label">About</div>
+    <div class="sec-label" id="aboutSection">About</div>
     <div style="margin:0 16px 24px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;text-align:center">
       <div class="logo" style="justify-content:center;margin-bottom:8px">
         <span class="plate"></span><span class="bar"></span><h1 class="anton" style="font-size:22px">Lambell</h1><span class="bar"></span><span class="plate"></span>
       </div>
       <div class="hint" style="margin:0">A personal training tracker, built by Peter Lambek.</div>
       <div class="hint" style="margin:8px 0 0;color:var(--muted)">Exercise data: free-exercise-db (public domain). No accounts, no cloud — your data stays on this phone.</div>
+      <button id="bmcBtn" style="margin:16px 0 0;width:100%;background:#FFDD00;color:#0d0c0c;border:none;border-radius:10px;padding:12px 16px;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer">
+        <span style="font-size:19px">☕</span> Buy me a coffee
+      </button>
+      <div class="hint" style="margin:10px 0 0;color:var(--muted)">Lambell is free, always. If it's useful to you, a coffee is appreciated — never required.</div>
     </div>
 
     <div class="sec-label" style="color:#d33a3a">Danger zone</div>
-    <div class="hint">Deletes everything — programs, training log, body stats, photos, and your profile. The exercise library stays cached so you don't have to re-download it. This cannot be undone.</div>
+    <div class="hint">Deletes your training log, body stats, photos, and profile. The exercise library stays cached so you don't have to re-download it. This cannot be undone.</div>
+    <div class="hint" style="margin-top:10px">Your programs and custom exercises are kept by default — opt in below if you want those gone too.</div>
+    <button class="toggle-row" id="resetDelPrograms"><span>Also delete my programs</span><span class="switch"></span></button>
+    <button class="toggle-row" id="resetDelExercises"><span>Also delete my custom exercises</span><span class="switch"></span></button>
     <div style="margin:0 16px 24px"><button class="danger" id="resetAppBtn" style="width:100%">🗑 Reset app & start fresh</button></div>
   </div>
 </div>
@@ -1087,6 +1081,7 @@ const IMG_BASES = [
   'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/dist/exercises/'
 ];
 const LS_DB     = 'lambell.exdb.v1';
+const LS_DBDATE = 'lambell.exdb.date.v1';
 const LS_CUSTOM = 'lambell.custom.v1';
 const LS_PROG   = 'lambell.programs.v1';
 const LS_LOG    = 'lambell.log.v1';
@@ -1135,6 +1130,8 @@ let trainWorkoutId = null;
 let profile = {entries: []};  // body measurements over time
 let pvId = null;              // progress photo currently in the viewer
 let hasAvatar = false;
+let resetDeletePrograms = false;   // Danger zone opt-ins — default off, so a reset keeps these
+let resetDeleteExercises = false;
 
 /* ---------- helpers ---------- */
 const $ = id => document.getElementById(id);
@@ -1178,6 +1175,8 @@ function imgUrl(path, baseIdx=0){ return IMG_BASES[baseIdx] + path; }
   applyFilters();
   renderPrograms();
   renderHomeStats();
+  syncWidgetState();
+  initHeroFlex();
   $('fabAdd').style.display = 'none';   // starts on Home
   if ('serviceWorker' in navigator){
     navigator.serviceWorker.register('sw.js').catch(()=>{});
@@ -1205,6 +1204,7 @@ async function downloadDb(){
       if(!save(LS_DB, data)){
         toast('Library loaded (couldn\u2019t cache it \u2014 will re-download next time)');
       } else {
+        save(LS_DBDATE, new Date().toISOString());
         toast(`Library loaded \u2014 ${data.length} exercises`);
       }
       $('dlHero').hidden = true;
@@ -1349,10 +1349,10 @@ new IntersectionObserver(entries=>{
 }, {rootMargin:'600px'}).observe($('sentinel'));
 
 /* ---------- detail sheet ---------- */
-function openDetail(ex, fromPicker){
+function openDetail(ex, fromPicker, elevate){
   detailEx = ex; imgIdx = 0;
   $('dName').textContent = ex.name;
-  $('detailSheet').classList.toggle('above', !!fromPicker);
+  $('detailSheet').classList.toggle('above', !!fromPicker || !!elevate);
   $('dAddBtn').hidden = !fromPicker;
 
   const badges = [];
@@ -1405,7 +1405,7 @@ $('detailImgWrap').addEventListener('click', ()=>{
 function closeDetail(){
   $('detailSheet').classList.remove('open');
   $('detailSheet').classList.remove('above');
-  if(!$('pickSheet').classList.contains('open')) document.body.style.overflow = '';
+  if(!$('pickSheet').classList.contains('open') && !$('pgSheet').classList.contains('open')) document.body.style.overflow = '';
 }
 $('dAddBtn').addEventListener('click', ()=>{
   if(!detailEx || !editing) return;
@@ -1449,6 +1449,33 @@ $('dShare').addEventListener('click', async ()=>{
   }catch(err){
     toast('Couldn\u2019t create share code');
   }
+});
+
+$('pgExportFile').addEventListener('click', async ()=>{
+  if(!editing) return;
+  const payload = programExportPayload(editing, $('pgName').value.trim());
+  const code = 'LMB1:' + await packCode(JSON.stringify(payload));
+  const fileText = `Lambell program \u2014 ${payload.n}\nOpen Lambell \u2192 Programs \u2192 Import shared program, and paste the code below:\n\n${code}\n`;
+  const safeName = (payload.n || 'Program').replace(/[^a-z0-9]+/gi, '-').replace(/^-+|-+$/g, '') || 'Program';
+  const fileName = `Lambell-${safeName}.txt`;
+  const cap = window.Capacitor;
+  if(cap && cap.isNativePlatform && cap.isNativePlatform() && cap.Plugins && cap.Plugins.Filesystem && cap.Plugins.Share){
+    try{
+      const { Filesystem, Share } = cap.Plugins;
+      await Filesystem.writeFile({ path: fileName, data: fileText, directory: 'CACHE', encoding: 'utf8' });
+      const { uri } = await Filesystem.getUri({ path: fileName, directory: 'CACHE' });
+      await Share.share({ title: `Lambell program \u2014 ${payload.n}`, dialogTitle: 'Share program file', url: uri });
+    }catch(err){
+      if(!(err && err.message && /cancel/i.test(err.message))) toast('Couldn\u2019t export file');
+    }
+    return;
+  }
+  const blob = new Blob([fileText], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = fileName;
+  a.click();
+  URL.revokeObjectURL(a.href);
 });
 
 /* ---------- custom exercise form ---------- */
@@ -1607,12 +1634,20 @@ function renderWorkouts(){
         <input value="${esc(w.name)}" data-w="${esc(w.id)}" data-f="wname" maxlength="30" aria-label="Workout name">
         <button class="wk-del" data-w="${esc(w.id)}" data-f="wdel" aria-label="Remove workout">×</button>
       </div>
+      <div class="wk-bulk">
+        <input type="number" inputmode="numeric" min="1" max="20" placeholder="Sets" data-w="${esc(w.id)}" data-bulk="sets" aria-label="Bulk sets">
+        <span class="sep">×</span>
+        <input type="number" inputmode="numeric" min="1" max="100" placeholder="Reps" data-w="${esc(w.id)}" data-bulk="reps" aria-label="Bulk reps">
+        <input type="number" inputmode="numeric" min="0" max="600" step="5" class="rest" placeholder="Rest" data-w="${esc(w.id)}" data-bulk="rest" aria-label="Bulk rest seconds">
+        <span class="unit">s</span>
+        <button class="btn ghost" data-w="${esc(w.id)}" data-f="bulkapply">Apply to all</button>
+      </div>
       <div class="exlist" data-w="${esc(w.id)}">
       ${w.exercises.map((x,i)=>`
         <div class="exr ${x.grp?'grouped':''}" data-i="${i}">
           <div class="top">
             <span class="grab" aria-label="Drag to reorder">⠿</span>
-            <span class="nm">${esc(x.name)}${x.grp?` <span style="color:var(--accent);font-weight:700">\u00b7 ${esc(x.grp)}</span>`:''}</span>
+            <span class="nm" data-f="exview" data-exid="${esc(x.exId||'')}" data-name="${esc(x.name)}">${esc(x.name)}${x.grp?` <span style="color:var(--accent);font-weight:700">\u00b7 ${esc(x.grp)}</span>`:''}</span>
             <button class="x" data-w="${esc(w.id)}" data-i="${i}" data-f="xdel" aria-label="Remove exercise">×</button>
           </div>
           <div class="ctrl">
@@ -1634,6 +1669,7 @@ function renderWorkouts(){
         </div>`).join('')}
       </div>
       <button class="btn ghost" style="width:100%;margin-top:10px" data-w="${esc(w.id)}" data-f="addex">+ Add exercise</button>
+      <button class="btn ghost" style="width:100%;margin-top:8px" data-w="${esc(w.id)}" data-f="wdup">⧉ Duplicate this workout</button>
     </div>`).join('');
 }
 
@@ -1673,12 +1709,38 @@ $('pgWorkouts').addEventListener('click', e=>{
     editing.workouts = editing.workouts.filter(x=> x.id !== t.dataset.w);
     editing.schedule = editing.schedule.map(s=> s === t.dataset.w ? null : s);
     renderWorkouts(); renderSched();
+  } else if(f === 'wdup'){
+    const src = editing.workouts.find(x=> x.id === t.dataset.w); if(!src) return;
+    const copy = JSON.parse(JSON.stringify(src));
+    copy.id = 'w_' + Date.now();
+    copy.name = src.name + ' copy';
+    editing.workouts.splice(editing.workouts.indexOf(src) + 1, 0, copy);
+    renderWorkouts();
+    toast('Workout duplicated');
   } else if(f === 'xdel'){
     const w = editing.workouts.find(x=> x.id === t.dataset.w);
     w.exercises.splice(+t.dataset.i, 1);
     renderWorkouts();
   } else if(f === 'addex'){
     openPicker(t.dataset.w);
+  } else if(f === 'exview'){
+    const ex = resolveEx(t.dataset.exid, t.dataset.name);
+    if(ex) openDetail(ex, false, true);
+    else toast('No details on file for this exercise — worth double-checking before you train');
+  } else if(f === 'bulkapply'){
+    const w = editing.workouts.find(x=> x.id === t.dataset.w); if(!w || !w.exercises.length) return;
+    const card = t.closest('.wk-card');
+    const setsV = card.querySelector('[data-bulk="sets"]').value;
+    const repsV = card.querySelector('[data-bulk="reps"]').value;
+    const restV = card.querySelector('[data-bulk="rest"]').value;
+    if(setsV === '' && repsV === '' && restV === ''){ toast('Enter at least one value to apply'); return; }
+    w.exercises.forEach(ex=>{
+      if(setsV !== '') ex.sets = Math.max(1, +setsV);
+      if(repsV !== '') ex.reps = Math.max(1, +repsV);
+      if(restV !== '') ex.rest = restV;
+    });
+    renderWorkouts();
+    toast(`Applied to ${w.exercises.length} exercise${w.exercises.length===1?'':'s'}`);
   }
 });
 
@@ -1716,6 +1778,7 @@ $('pgSave').addEventListener('click', ()=>{
   save(LS_PROG, programs);
   closeEditor();
   renderPrograms();
+  syncWidgetState();
   toast('Program saved');
 });
 
@@ -2058,14 +2121,17 @@ async function unpackCode(code){
   return await new Response(new Blob([u8]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
 }
 
-$('pgShare').addEventListener('click', async ()=>{
-  if(!editing) return;
-  const p = editing;
-  const payload = {
-    v:1, n: ($('pgName').value.trim() || p.name || 'Program'), weeks: p.weeks,
+function programExportPayload(p, nameOverride){
+  return {
+    v:1, n: (nameOverride || p.name || 'Program'), weeks: p.weeks,
     workouts: p.workouts.map(w=>({ n:w.name, ex:w.exercises.map(x=>({n:x.name, s:x.sets, r:x.reps, k:x.kg||'', t:x.rest||''})) })),
     sched: p.schedule.map(s=> s ? p.workouts.findIndex(w=> w.id===s) : -1)
   };
+}
+$('pgShare').addEventListener('click', async ()=>{
+  if(!editing) return;
+  const p = editing;
+  const payload = programExportPayload(p, $('pgName').value.trim());
   try{
     const code = 'LMB1:' + await packCode(JSON.stringify(payload));
     const msg = `Lambell program \u201c${payload.n}\u201d \u2014 open Lambell \u2192 Programs \u2192 Import shared program, and paste this code:\n\n${code}`;
@@ -2481,6 +2547,77 @@ function calcStreak(){
   }
   return n;
 }
+/* pushes today's program status to the native widget (no-op outside the Android app) */
+function syncWidgetState(){
+  const cap = window.Capacitor;
+  if(!cap || !cap.isNativePlatform || !cap.isNativePlatform() || !cap.Plugins || !cap.Plugins.LambellWidget) return;
+  const p = programs.find(x=> x.active);
+  if(!p){
+    cap.Plugins.LambellWidget.updateStatus({dayType: 'rest', workoutName: null, done: false, streak: calcStreak()}).catch(()=>{});
+    return;
+  }
+  const dayIdx = (new Date().getDay() + 6) % 7;   // Mon = 0
+  const todayWid = p.schedule[dayIdx];
+  const w = p.workouts.find(x=> x.id === todayWid);
+  if(!w){
+    cap.Plugins.LambellWidget.updateStatus({dayType: 'rest', workoutName: null, done: false, streak: calcStreak()}).catch(()=>{});
+    return;
+  }
+  const done = log.some(s=> s.workoutId === w.id && s.dkey === todayKey());
+  cap.Plugins.LambellWidget.updateStatus({dayType: 'workout', workoutName: w.name, done, streak: calcStreak()}).catch(()=>{});
+}
+
+/* home-screen hero: fists-together idle pose <-> a randomly-picked flexed pose,
+   swapped with a quick crossfade on tap. Black background of every pose photo
+   is keyed to transparent on draw. */
+function initHeroFlex(){
+  const canvas = $('heroFlexCanvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d', {willReadFrequently: true});
+  const CW = 720, CH = 720;
+  canvas.width = CW; canvas.height = CH;
+
+  const poseIdle = new Image();
+  poseIdle.src = 'logo_pose_idle.png';
+  const flexedFiles = ['logo_pose_flexed-1.png', 'logo_pose_flexed-2.png', 'logo_pose_flexed-3.png'];
+  const flexedPoses = flexedFiles.map(f=>{ const img = new Image(); img.src = f; return img; });
+
+  let flexed = false, busy = false;
+
+  function whenReady(img, cb){ img.complete ? cb() : img.onload = cb; }
+
+  function keyToCanvas(source){
+    ctx.drawImage(source, 0, 0, CW, CH);
+    const frame = ctx.getImageData(0, 0, CW, CH), d = frame.data;
+    for(let i = 0; i < d.length; i += 4){
+      const lum = Math.max(d[i], d[i+1], d[i+2]);   // near-black -> transparent, soft edge
+      if(lum < 30) d[i+3] = 0;
+      else if(lum < 80) d[i+3] = Math.round((lum - 30) / 50 * 255);
+    }
+    ctx.putImageData(frame, 0, 0);
+  }
+
+  function swapTo(img, isFlexed){
+    canvas.style.opacity = '0';
+    setTimeout(()=>{
+      whenReady(img, ()=>{
+        keyToCanvas(img);
+        canvas.style.opacity = '1';
+        flexed = isFlexed;
+        busy = false;
+      });
+    }, 150);
+  }
+
+  canvas.addEventListener('click', ()=>{
+    if(busy) return;
+    busy = true;
+    if(flexed) swapTo(poseIdle, false);
+    else swapTo(flexedPoses[Math.floor(Math.random() * flexedPoses.length)], true);
+  });
+
+  whenReady(poseIdle, ()=> keyToCanvas(poseIdle));
+}
 function weeklySummary(){
   const thisWeek = weekStartOf(todayKey());
   const sessions = log.filter(s=> weekStartOf(s.dkey) === thisWeek);
@@ -2528,6 +2665,7 @@ function finishWorkout(){
   draft = null; retrain = false;
   stopRest();
   renderTrain();
+  syncWidgetState();
 
   const lifetime = volBefore + vol;
   const mile = MILES.find(m=> volBefore < m.v && lifetime >= m.v);
@@ -3510,14 +3648,40 @@ function svgChart(pts, unit){
   </svg>`;
 }
 
+$('resetDelPrograms').addEventListener('click', ()=>{
+  resetDeletePrograms = !resetDeletePrograms;
+  $('resetDelPrograms').querySelector('.switch').classList.toggle('on', resetDeletePrograms);
+});
+$('resetDelExercises').addEventListener('click', ()=>{
+  resetDeleteExercises = !resetDeleteExercises;
+  $('resetDelExercises').querySelector('.switch').classList.toggle('on', resetDeleteExercises);
+});
 $('resetAppBtn').addEventListener('click', ()=>{
-  askConfirm('This deletes ALL your data \u2014 programs, training log, body stats, photos, custom exercises and your profile. This cannot be undone. Continue?', ()=>{
+  const wiped = [], kept = [];
+  (resetDeletePrograms ? wiped : kept).push('programs');
+  (resetDeleteExercises ? wiped : kept).push('custom exercises');
+  let msg = 'This deletes your training log, body stats, photos, and profile';
+  if(wiped.length) msg += ', plus your ' + wiped.join(' and ');
+  msg += '. ';
+  if(kept.length) msg += `Your ${kept.join(' and ')} will be kept. `;
+  msg += 'This cannot be undone. Continue?';
+  askConfirm(msg, ()=>{
     askConfirm('Really sure? There is no way back from this.', async ()=>{
-      [LS_CUSTOM, LS_PROG, LS_LOG, LS_DRAFT, LS_PROFILE].forEach(k=> localStorage.removeItem(k));
-      try{ await new Promise((res, rej)=>{
-        const r = indexedDB.deleteDatabase('lambell');
-        r.onsuccess = res; r.onerror = rej; r.onblocked = res;
-      }); }catch(e){}
+      const keys = [LS_LOG, LS_DRAFT, LS_PROFILE];
+      if(resetDeletePrograms) keys.push(LS_PROG);
+      if(resetDeleteExercises) keys.push(LS_CUSTOM);
+      keys.forEach(k=> localStorage.removeItem(k));
+      try{
+        if(resetDeleteExercises){
+          await new Promise((res, rej)=>{
+            const r = indexedDB.deleteDatabase('lambell');
+            r.onsuccess = res; r.onerror = rej; r.onblocked = res;
+          });
+        } else {
+          const all = await idbAll();
+          await Promise.all(all.filter(r=> !String(r.id).startsWith('custex-')).map(r=> idbDel(r.id)));
+        }
+      }catch(e){}
       location.reload();
     });
   });
@@ -3532,10 +3696,35 @@ function closeSettings(){ $('settingsSheet').classList.remove('open'); }
 $('settingsBtn').addEventListener('click', openSettings);
 $('setBack').addEventListener('click', closeSettings);
 
+function openExternal(url){
+  const cap = window.Capacitor;
+  if(cap && cap.isNativePlatform && cap.isNativePlatform() && cap.Plugins && cap.Plugins.Browser){
+    cap.Plugins.Browser.open({url}).catch(()=> window.open(url, '_blank'));
+  } else {
+    window.open(url, '_blank');
+  }
+}
+$('bmcBtn').addEventListener('click', ()=> openExternal('https://www.buymeacoffee.com/lambell'));
+$('coffeeNavBtn').addEventListener('click', ()=>{
+  openSettings();
+  requestAnimationFrame(()=> requestAnimationFrame(()=>{
+    const el = $('aboutSection');
+    if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  }));
+});
+
 function renderSettings(){
   [['setCelebAnim','celebAnim'],['setCelebSound','celebSound'],['setConfetti','confetti'],['setRestSound','restSound'],['setRestVibrate','restVibrate']]
     .forEach(([id, key])=> $(id).querySelector('.switch').classList.toggle('on', !!profile.settings[key]));
   $('restDefVal').textContent = profile.settings.defaultRest + 's';
+  const dbDate = fullLoaded ? load(LS_DBDATE) : null;
+  $('libLastUpdated').textContent = dbDate
+    ? `Full library (${db.length} exercises), last updated ${new Date(dbDate).toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'})}`
+    : `Using the built-in starter set (${db.length} exercises) — not yet downloaded`;
+  resetDeletePrograms = false;
+  resetDeleteExercises = false;
+  $('resetDelPrograms').querySelector('.switch').classList.remove('on');
+  $('resetDelExercises').querySelector('.switch').classList.remove('on');
 }
 [['setCelebAnim','celebAnim'],['setCelebSound','celebSound'],['setConfetti','confetti'],['setRestSound','restSound'],['setRestVibrate','restVibrate']]
   .forEach(([id, key])=>{
@@ -3557,6 +3746,7 @@ $('restDefPlus').addEventListener('click', ()=>{
 });
 $('setReloadLib').addEventListener('click', ()=>{
   localStorage.removeItem(LS_DB);
+  localStorage.removeItem(LS_DBDATE);
   fullLoaded = false;
   $('dlHero').hidden = false;
   $('dlBtn').disabled = false; $('dlBtn').textContent = 'Load full library';
@@ -3748,7 +3938,6 @@ $('restPlus').addEventListener('click', ()=>{
   else startRest(15);
   tickRest();
 });
-const SOON = {};
 document.querySelector('nav.tabs').addEventListener('click', e=>{
   const b = e.target.closest('button[data-tab]'); if(!b) return;
   progressBackToProfile = false;
@@ -3762,16 +3951,10 @@ function gotoTab(tab){
   $('view-programs').classList.toggle('active', tab === 'programs');
   $('view-train').classList.toggle('active', tab === 'train');
   $('view-progress').classList.toggle('active', tab === 'progress');
-  $('view-soon').classList.toggle('active', !!SOON[tab]);
   $('fabAdd').style.display = (tab === 'library' || tab === 'programs') ? 'flex' : 'none';
   if(tab === 'home') renderHomeStats();
   if(tab === 'train') renderTrain();
   if(tab === 'progress') renderProgress();
-  if(SOON[tab]){
-    $('soonTitle').textContent = SOON[tab].t;
-    $('soonText').textContent  = SOON[tab].p;
-    $('soonStage').textContent = SOON[tab].s;
-  }
   window.scrollTo({top:0});
 }
 function renderHomeWeekly(){
@@ -3835,6 +4018,23 @@ function pushOverlayState(){
   history.pushState({lambellOverlay:true}, '', location.href);
 }
 window.addEventListener('popstate', ()=>{ closeTopOverlay(); });
+
+/* native Android hardware/gesture back button:
+   1) close whatever overlay is open, 2) jump back to the Home tab,
+   3) only exit the app on a second press within 2s of the first */
+(function initBackButton(){
+  const cap = window.Capacitor;
+  if(!cap || !cap.isNativePlatform || !cap.isNativePlatform() || !cap.Plugins || !cap.Plugins.App) return;
+  let lastBackPress = 0;
+  cap.Plugins.App.addListener('backButton', ()=>{
+    if(closeTopOverlay()) return;
+    if(currentTab !== 'home'){ gotoTab('home'); return; }
+    const now = Date.now();
+    if(now - lastBackPress < 2000){ cap.Plugins.App.exitApp(); return; }
+    lastBackPress = now;
+    toast('Press back again to exit');
+  });
+})();
 </script>
 </body>
 </html>
